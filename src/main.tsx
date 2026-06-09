@@ -7,6 +7,9 @@ import MobileHome from './mobile/pages/MobileHome'
 import MobileHotelDetail from './mobile/pages/MobileHotelDetail'
 import MobileRoomDetail from './mobile/pages/MobileRoomDetail'
 import MobileGalleryScreen from './mobile/pages/MobileGalleryScreen'
+import MobileHotels from './mobile/pages/MobileHotels'
+import MobileBookings from './mobile/pages/MobileBookings'
+import MobileProfile from './mobile/pages/MobileProfile'
 import './index.css'
 
 function ResponsiveLandingWrapper() {
@@ -19,6 +22,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<ResponsiveLandingWrapper />} />
+        <Route path="/hotels" element={<MobileHotels />} />
+        <Route path="/bookings" element={<MobileBookings />} />
+        <Route path="/profile" element={<MobileProfile />} />
         <Route path="/hotel/:hotelId" element={<MobileHotelDetail />} />
         <Route path="/hotel/:hotelId/gallery" element={<MobileGalleryScreen />} />
         <Route path="/gallery/:hotelId" element={<MobileGalleryScreen />} />

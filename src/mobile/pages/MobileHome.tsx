@@ -6,6 +6,7 @@ import MobileHomeSuites from '../components/MobileHomeSuites'
 import MobileHomeReviews from '../components/MobileHomeReviews'
 import MobileHomeGallery from '../components/MobileHomeGallery'
 import Logo from '../../components/Logo'
+import MobileBottomNav from '../components/MobileBottomNav'
 
 const TRUST = [
   { icon: '✦', label: 'Verified Property' },
@@ -137,21 +138,23 @@ export default function MobileHome() {
         />
       )}
 
-      {/* Bottom padding so last section clears the FAB */}
+      {/* Bottom padding — clears bottom nav + a little breathing room */}
       <div className="h-24" />
 
-      {/* Floating WhatsApp CTA */}
+      {/* Floating WhatsApp CTA — sits above the bottom nav */}
       {waUrl && (
         <a
           href={waUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="fixed bottom-6 right-5 z-50 flex items-center gap-2 rounded-full border border-emerald-500/40 bg-forest-950/90 px-4 py-3 text-sm font-medium text-emerald-400 shadow-lg backdrop-blur-sm active:scale-95 transition-transform"
+          className="fixed bottom-20 right-5 z-50 flex items-center gap-2 rounded-full border border-emerald-500/40 bg-forest-950/90 px-4 py-3 text-sm font-medium text-emerald-400 shadow-lg backdrop-blur-sm active:scale-95 transition-transform"
         >
           <span className="text-base">💬</span>
           Chat to Book
         </a>
       )}
+
+      <MobileBottomNav />
     </div>
   )
 }
