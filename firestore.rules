@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Pre-login phone lookup is handled by Cloud Functions (Admin SDK), so the
+    // browser never needs to read these collections unauthenticated.
+
+    // A signed-in guest may read ONLY their own stay documents — this is what
+    // the real-time access guard relies on. No client writes.
+    match /stays/{stayId} {
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    // A signed-in guest may read ONLY their own profile. No client writes.
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+  }
+}
