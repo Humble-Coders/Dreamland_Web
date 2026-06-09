@@ -1,9 +1,17 @@
 import { useState } from 'react'
-import Card from './Card.jsx'
-import Spinner from './Spinner.jsx'
+import type { CheckInOption } from '../types/firestore'
+import Card from './Card'
+import Spinner from './Spinner'
 
-export default function PhoneSelect({ guests, onSelect, sending, error }) {
-  const [selected, setSelected] = useState(null)
+interface PhoneSelectProps {
+  guests: CheckInOption[]
+  onSelect: (guest: CheckInOption) => void
+  sending: boolean
+  error: string
+}
+
+export default function PhoneSelect({ guests, onSelect, sending, error }: PhoneSelectProps) {
+  const [selected, setSelected] = useState<CheckInOption | null>(null)
 
   return (
     <Card>
@@ -63,7 +71,7 @@ export default function PhoneSelect({ guests, onSelect, sending, error }) {
       <button
         type="button"
         disabled={!selected || sending}
-        onClick={() => onSelect(selected)}
+        onClick={() => selected && onSelect(selected)}
         className="mt-7 flex w-full items-center justify-center gap-2 rounded-2xl bg-gold-500 px-6 py-4 font-semibold text-forest-950 shadow-lg shadow-gold-500/20 transition-all hover:bg-gold-400 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
       >
         {sending ? (

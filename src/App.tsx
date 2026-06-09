@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from './firebase.js'
-import { getRoomInstanceId } from './utils.js'
-import Layout from './components/Layout.jsx'
-import Card from './components/Card.jsx'
-import Spinner from './components/Spinner.jsx'
-import InfoScreen from './components/InfoScreen.jsx'
-import RoomEntry from './components/RoomEntry.jsx'
-import AccessGuard from './components/AccessGuard.jsx'
+import type { User } from 'firebase/auth'
+import { auth } from './firebase'
+import { getRoomInstanceId } from './utils'
+import Layout from './components/Layout'
+import Card from './components/Card'
+import Spinner from './components/Spinner'
+import InfoScreen from './components/InfoScreen'
+import RoomEntry from './components/RoomEntry'
+import AccessGuard from './components/AccessGuard'
 
 const configMissing = !import.meta.env.VITE_FIREBASE_API_KEY
 
 export default function App() {
-  const [user, setUser] = useState(undefined) // undefined = still resolving auth
+  // undefined = still resolving auth from persisted session
+  const [user, setUser] = useState<User | null | undefined>(undefined)
   const [roomInstanceId] = useState(getRoomInstanceId)
 
   useEffect(() => {
@@ -29,12 +31,12 @@ export default function App() {
           tone="error"
           icon="⚙️"
           title="Setup required"
-          message="Firebase isn’t configured yet. Add your project’s web config to a .env.local file (see .env.example) and restart the dev server."
+          message="Firebase isn't configured yet. Add your project's web config to a .env.local file (see .env.example) and restart the dev server."
         />
       </Layout>
     )
   } else if (user === undefined) {
-    // Resolving persisted session.
+    // Resolving persisted session — show a minimal loading state.
     screen = (
       <Layout>
         <Card className="flex flex-col items-center py-12 text-center">

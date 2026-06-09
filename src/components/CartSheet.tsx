@@ -1,11 +1,25 @@
 import { useEffect, useState } from 'react'
-import { formatINR, unitPrice } from '../orders.js'
-import Spinner from './Spinner.jsx'
+import type { CartLine, CartSource, FoodItem, Service, OrderTotals } from '../types/firestore'
+import { formatINR, unitPrice } from '../orders'
+import Spinner from './Spinner'
+
+interface CartSheetProps {
+  open: boolean
+  onClose: () => void
+  lines: CartLine[]
+  setQty: (source: CartSource, item: FoodItem | Service, qty: number) => void
+  totals: OrderTotals
+  roomNumber: string
+  onPlace: () => Promise<void>
+  onPlaced: () => void
+}
 
 // Bottom-sheet cart: review → confirm → place. Drives a small internal step
 // machine so the confirmation and result share one surface.
-export default function CartSheet({ open, onClose, lines, setQty, totals, roomNumber, onPlace, onPlaced }) {
-  const [step, setStep] = useState('cart') // cart | confirm | placing | error
+type CartStep = 'cart' | 'confirm' | 'placing' | 'error'
+
+export default function CartSheet({ open, onClose, lines, setQty, totals, roomNumber, onPlace, onPlaced }: CartSheetProps) {
+  const [step, setStep] = useState<CartStep>('cart')
   const [errorMsg, setErrorMsg] = useState('')
 
   // Reset to the cart view whenever the sheet is (re)opened.
@@ -24,12 +38,15 @@ export default function CartSheet({ open, onClose, lines, setQty, totals, roomNu
     setStep('placing')
     try {
       await onPlace()
-      onPlaced() // parent clears the cart, closes the sheet, jumps to Orders
+      onPlaced()
     } catch (err) {
       console.error('Failed to place order', err)
+      // permission-denied most likely means the stay went inactive between
+      // opening the cart and tapping confirm — surface a specific message.
+      const code = (err as { code?: string })?.code
       setErrorMsg(
-        err?.code === 'permission-denied'
-          ? 'We couldn’t place this order against your stay. Please contact the front desk.'
+        code === 'permission-denied'
+          ? "We couldn't place this order against your stay. Please contact the front desk."
           : 'Something went wrong placing your order. Please try again.',
       )
       setStep('error')
@@ -38,13 +55,13 @@ export default function CartSheet({ open, onClose, lines, setQty, totals, roomNu
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+      {/* Backdrop — disabled while the order write is in flight to prevent accidental close. */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={step === 'placing' ? undefined : onClose}
       />
 
       <div className="animate-fade-up relative z-10 flex max-h-[88vh] w-full max-w-md flex-col rounded-t-3xl border border-gold-500/25 bg-forest-900 shadow-2xl sm:rounded-3xl">
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-cream/10 px-6 py-4">
           <h2 className="font-display text-2xl text-cream">
             {step === 'confirm' ? 'Confirm order' : 'Your cart'}
@@ -60,7 +77,6 @@ export default function CartSheet({ open, onClose, lines, setQty, totals, roomNu
           </button>
         </div>
 
-        {/* Body */}
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
           {empty ? (
             <p className="py-10 text-center text-sm text-cream/60">
@@ -115,7 +131,6 @@ export default function CartSheet({ open, onClose, lines, setQty, totals, roomNu
           )}
         </div>
 
-        {/* Footer */}
         {!empty && step !== 'error' && (
           <div className="border-t border-cream/10 px-6 py-4">
             <dl className="space-y-1.5 text-sm">

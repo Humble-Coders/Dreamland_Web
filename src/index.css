@@ -68,3 +68,84 @@ body {
 .grecaptcha-badge {
   visibility: hidden;
 }
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-14px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.12; transform: scale(1); }
+  50%       { opacity: 0.22; transform: scale(1.08); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes reveal-left {
+  from { opacity: 0; transform: translateX(-28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes reveal-right {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes draw-x {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+@keyframes bounce-y {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(6px); }
+}
+
+.animate-float      { animation: float       3.5s ease-in-out infinite; }
+.animate-glow-pulse { animation: glow-pulse  5s   ease-in-out infinite; }
+
+.animate-shimmer-text {
+  background: linear-gradient(120deg, #e6c34a 0%, #fbf6e9 40%, #e6c34a 60%, #d4af37 100%);
+  background-size: 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s ease infinite;
+}
+
+.animate-bounce-y { animation: bounce-y 1.4s ease-in-out infinite; }
+
+/* Scroll-reveal classes toggled by IntersectionObserver */
+.reveal               { opacity: 0; }
+.reveal.in-view       { animation: reveal-up    0.7s cubic-bezier(0.16,1,0.3,1) both; }
+.reveal-left          { opacity: 0; }
+.reveal-left.in-view  { animation: reveal-left  0.7s cubic-bezier(0.16,1,0.3,1) both; }
+.reveal-right         { opacity: 0; }
+.reveal-right.in-view { animation: reveal-right 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+.reveal-scale         { opacity: 0; }
+.reveal-scale.in-view { animation: scale-in     0.6s cubic-bezier(0.16,1,0.3,1) both; }
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }

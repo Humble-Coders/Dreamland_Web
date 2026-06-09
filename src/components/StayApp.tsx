@@ -9,25 +9,33 @@ import {
   where,
 } from 'firebase/firestore'
 import { signOut } from 'firebase/auth'
-import { auth, db } from '../firebase.js'
-import { buildOrderItem, formatINR, orderTotals } from '../orders.js'
-import { normalizePhone } from '../utils.js'
-import Logo from './Logo.jsx'
-import Spinner from './Spinner.jsx'
-import ItemCard from './ItemCard.jsx'
-import CartSheet from './CartSheet.jsx'
+import type { User } from 'firebase/auth'
+import { auth, db } from '../firebase'
+import { buildOrderItem, formatINR, orderTotals } from '../orders'
+import { normalizePhone } from '../utils'
+import type { Stay, FoodItem, Service, Order, OrderItem, CartLine, CartSource, OrderTotals } from '../types/firestore'
+import Logo from './Logo'
+import Spinner from './Spinner'
+import ItemCard from './ItemCard'
+import CartSheet from './CartSheet'
 
 // Food orders go in as ROOM_SERVICE; add-on services as SERVICE.
 const FOOD_TYPE = 'ROOM_SERVICE'
 const SERVICE_TYPE = 'SERVICE'
 
-const STATUS_LABELS = {
+const STATUS_LABELS: Record<string, { label: string; tone: string }> = {
   NEW: { label: 'Received', tone: 'bg-gold-500/15 text-gold-300 ring-gold-500/30' },
   ASSIGNED: { label: 'In progress', tone: 'bg-sky-500/15 text-sky-300 ring-sky-500/30' },
   COMPLETED: { label: 'Delivered', tone: 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30' },
 }
 
-export default function StayApp({ user, stay, guestName }) {
+interface StayAppProps {
+  user: User
+  stay: Stay
+  guestName: string
+}
+
+export default function StayApp({ user, stay, guestName }: StayAppProps) {
   // The guest who actually signed in. AccessGuard resolves this across the
   // group booking (the phone may belong to a sibling room); fall back to a
   // local match on this room's guests, then the stay's primary guest name.
@@ -39,17 +47,18 @@ export default function StayApp({ user, stay, guestName }) {
     stay.guestName ||
     ''
 
-  const [tab, setTab] = useState('food') // food | services | orders
-  const [food, setFood] = useState(null)
-  const [services, setServices] = useState(null)
+  const [tab, setTab] = useState<'food' | 'services' | 'orders'>('food')
+  const [food, setFood] = useState<FoodItem[] | null>(null)
+  const [services, setServices] = useState<Service[] | null>(null)
   const [loadErr, setLoadErr] = useState(false)
   const [foodCategory, setFoodCategory] = useState('All')
 
-  const [cart, setCart] = useState({}) // `${source}:${id}` -> { source, item, qty }
+  const [cart, setCart] = useState<Record<string, CartLine>>({})
   const [cartOpen, setCartOpen] = useState(false)
-  const [orders, setOrders] = useState([])
+  const [orders, setOrders] = useState<Order[]>([])
 
-  // Load the hotel's menu + services once.
+  // Load the hotel's menu + services once on mount (not real-time — items
+  // rarely change mid-stay and a one-shot fetch keeps read counts low).
   useEffect(() => {
     let alive = true
     ;(async () => {
@@ -60,10 +69,14 @@ export default function StayApp({ user, stay, guestName }) {
         ])
         if (!alive) return
         setFood(
-          fSnap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((i) => i.isAvailable !== false),
+          fSnap.docs
+            .map((d) => ({ id: d.id, ...d.data() } as FoodItem))
+            .filter((i) => i.isAvailable !== false),
         )
         setServices(
-          sSnap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((i) => i.isActive !== false),
+          sSnap.docs
+            .map((d) => ({ id: d.id, ...d.data() } as Service))
+            .filter((i) => i.isActive !== false),
         )
       } catch (err) {
         console.error('Failed to load menu', err)
@@ -75,14 +88,15 @@ export default function StayApp({ user, stay, guestName }) {
     }
   }, [stay.hotelId])
 
-  // Live view of this guest's own orders.
+  // Live view of this guest's own orders — real-time so status updates
+  // (NEW → ASSIGNED → COMPLETED) appear without a manual refresh.
   useEffect(() => {
     const q = query(collection(db, 'orders'), where('userId', '==', stay.userId))
     return onSnapshot(
       q,
       (snap) => {
         const list = snap.docs
-          .map((d) => ({ id: d.id, ...d.data() }))
+          .map((d) => ({ id: d.id, ...d.data() } as Order))
           .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0))
         setOrders(list)
       },
@@ -90,10 +104,11 @@ export default function StayApp({ user, stay, guestName }) {
     )
   }, [stay.userId])
 
-  // Food category chips (categories may be comma-separated on a doc).
+  // Food category chips — categories may be comma-separated on a single doc
+  // (e.g. "Breakfast, Veg"), so we split, dedupe, and sort them.
   const foodCategories = useMemo(() => {
     if (!food) return ['All']
-    const set = new Set()
+    const set = new Set<string>()
     food.forEach((i) =>
       String(i.category || '')
         .split(',')
@@ -115,8 +130,10 @@ export default function StayApp({ user, stay, guestName }) {
     )
   }, [food, foodCategory])
 
-  // --- cart ---
-  const setQty = (source, item, qty) =>
+  // --- cart helpers ---
+  // Cart key format: `${source}:${itemId}` — separating food and service IDs
+  // avoids collisions when both collections happen to share a Firestore doc ID.
+  const setQty = (source: CartSource, item: FoodItem | Service, qty: number) =>
     setCart((prev) => {
       const key = `${source}:${item.id}`
       const next = { ...prev }
@@ -125,23 +142,25 @@ export default function StayApp({ user, stay, guestName }) {
       return next
     })
 
-  const qtyOf = (source, id) => cart[`${source}:${id}`]?.qty || 0
+  const qtyOf = (source: CartSource, id: string) => cart[`${source}:${id}`]?.qty || 0
 
   const cartLines = Object.values(cart)
   const cartCount = cartLines.reduce((s, l) => s + l.qty, 0)
-  const cartTotals = useMemo(
+  const cartTotals: OrderTotals = useMemo(
     () => orderTotals(cartLines.map((l) => buildOrderItem(l.item, l.qty))),
-    [cart], // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [cart],
   )
 
-  // Place the cart as one order per type (food -> ROOM_SERVICE, services -> SERVICE).
+  // Place the cart as one order per type (food → ROOM_SERVICE, services → SERVICE).
+  // Splitting by type lets the kitchen and housekeeping queues filter independently.
   const placeOrder = async () => {
-    const groups = { food: [], service: [] }
+    const groups: { food: CartLine[]; service: CartLine[] } = { food: [], service: [] }
     cartLines.forEach((l) => groups[l.source].push(l))
 
-    const writes = []
-    const submit = (type, lines) => {
-      const items = lines.map((l) => buildOrderItem(l.item, l.qty))
+    const writes: Promise<unknown>[] = []
+    const submit = (type: string, lines: CartLine[]) => {
+      const items: OrderItem[] = lines.map((l) => buildOrderItem(l.item, l.qty))
       const t = orderTotals(items)
       writes.push(
         addDoc(collection(db, 'orders'), {
@@ -175,7 +194,7 @@ export default function StayApp({ user, stay, guestName }) {
     setTab('orders')
   }
 
-  const tabs = [
+  const tabs: { id: 'food' | 'services' | 'orders'; label: string }[] = [
     { id: 'food', label: 'Food' },
     { id: 'services', label: 'Services' },
     { id: 'orders', label: 'Orders' },
@@ -188,7 +207,6 @@ export default function StayApp({ user, stay, guestName }) {
         className="pointer-events-none fixed -top-40 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-gold-500/15 blur-[120px]"
       />
 
-      {/* Header */}
       <header className="sticky top-0 z-30 border-b border-cream/10 bg-forest-950/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-md items-center gap-3 px-5 py-3">
           <Logo className="h-11 w-11 rounded-xl object-contain" />
@@ -207,7 +225,6 @@ export default function StayApp({ user, stay, guestName }) {
           </button>
         </div>
 
-        {/* Tabs */}
         <div className="mx-auto flex max-w-md gap-1 px-5 pb-3">
           {tabs.map((t) => (
             <button
@@ -226,7 +243,6 @@ export default function StayApp({ user, stay, guestName }) {
         </div>
       </header>
 
-      {/* Body */}
       <main className="relative z-10 mx-auto w-full max-w-md flex-1 px-5 pb-32 pt-5">
         {tab === 'food' && (
           <FoodTab
@@ -257,7 +273,6 @@ export default function StayApp({ user, stay, guestName }) {
         {tab === 'orders' && <OrdersTab orders={orders} onBrowse={() => setTab('food')} />}
       </main>
 
-      {/* Cart bar */}
       {cartCount > 0 && (
         <div className="fixed inset-x-0 bottom-0 z-40 px-5 pb-5">
           <button
@@ -299,10 +314,21 @@ function Loading() {
   )
 }
 
-function FoodTab({ food, visibleFood, categories, category, setCategory, loadErr, qtyOf, setQty }) {
+interface FoodTabProps {
+  food: FoodItem[] | null
+  visibleFood: FoodItem[]
+  categories: string[]
+  category: string
+  setCategory: (c: string) => void
+  loadErr: boolean
+  qtyOf: (source: CartSource, id: string) => number
+  setQty: (source: CartSource, item: FoodItem | Service, qty: number) => void
+}
+
+function FoodTab({ food, visibleFood, categories, category, setCategory, loadErr, qtyOf, setQty }: FoodTabProps) {
   if (loadErr) return <ErrorState />
   if (food === null) return <Loading />
-  if (food.length === 0) return <Empty text="The menu isn’t available right now." />
+  if (food.length === 0) return <Empty text="The menu isn't available right now." />
 
   return (
     <div>
@@ -336,7 +362,18 @@ function FoodTab({ food, visibleFood, categories, category, setCategory, loadErr
   )
 }
 
-function ListTab({ heading, subheading, items, loadErr, source, qtyOf, setQty, emptyText }) {
+interface ListTabProps {
+  heading: string
+  subheading: string
+  items: Service[] | null
+  loadErr: boolean
+  source: CartSource
+  qtyOf: (source: CartSource, id: string) => number
+  setQty: (source: CartSource, item: FoodItem | Service, qty: number) => void
+  emptyText: string
+}
+
+function ListTab({ heading, subheading, items, loadErr, source, qtyOf, setQty, emptyText }: ListTabProps) {
   if (loadErr) return <ErrorState />
   if (items === null) return <Loading />
   if (items.length === 0) return <Empty text={emptyText} />
@@ -359,7 +396,7 @@ function ListTab({ heading, subheading, items, loadErr, source, qtyOf, setQty, e
   )
 }
 
-function OrdersTab({ orders, onBrowse }) {
+function OrdersTab({ orders, onBrowse }: { orders: Order[]; onBrowse: () => void }) {
   if (orders.length === 0) {
     return (
       <div className="py-12 text-center">
@@ -385,7 +422,7 @@ function OrdersTab({ orders, onBrowse }) {
     <div className="space-y-3">
       <h2 className="font-display text-2xl text-cream">Your orders</h2>
       {orders.map((o) => {
-        const status = STATUS_LABELS[o.status] || STATUS_LABELS.NEW
+        const status = STATUS_LABELS[o.status] ?? STATUS_LABELS['NEW']
         const items = o.items || []
         return (
           <div key={o.id} className="rounded-2xl border border-cream/10 bg-forest-900/50 p-4">
@@ -403,7 +440,6 @@ function OrdersTab({ orders, onBrowse }) {
               </span>
             </div>
 
-            {/* Itemised lines */}
             <ul className="mt-3 space-y-2 border-t border-cream/10 pt-3">
               {items.map((i, idx) => {
                 const base = i.basePrice ?? i.price ?? 0
@@ -416,7 +452,7 @@ function OrdersTab({ orders, onBrowse }) {
                       </p>
                       <p className="text-[11px] text-cream/45">
                         {formatINR(base)} each
-                        {i.taxPercentage > 0 ? ` · +${i.taxPercentage}% tax` : ''}
+                        {(i.taxPercentage ?? 0) > 0 ? ` · +${i.taxPercentage}% tax` : ''}
                       </p>
                     </div>
                     <span className="shrink-0 text-sm tabular-nums text-cream/85">
@@ -427,7 +463,6 @@ function OrdersTab({ orders, onBrowse }) {
               })}
             </ul>
 
-            {/* Breakdown */}
             <dl className="mt-3 space-y-1 border-t border-cream/10 pt-3 text-sm">
               <div className="flex justify-between text-cream/55">
                 <dt>Subtotal</dt>
@@ -449,7 +484,7 @@ function OrdersTab({ orders, onBrowse }) {
   )
 }
 
-function formatTime(ts) {
+function formatTime(ts: Order['createdAt']): string {
   const ms = ts?.toMillis?.()
   if (!ms) return 'Just now'
   return new Date(ms).toLocaleString('en-IN', {
@@ -460,14 +495,14 @@ function formatTime(ts) {
   })
 }
 
-function Empty({ text }) {
+function Empty({ text }: { text: string }) {
   return <p className="py-12 text-center text-sm text-cream/55">{text}</p>
 }
 
 function ErrorState() {
   return (
     <p className="py-12 text-center text-sm text-red-300">
-      We couldn’t load this just now. Please check your connection and try again.
+      We couldn&apos;t load this just now. Please check your connection and try again.
     </p>
   )
 }

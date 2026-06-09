@@ -1,8 +1,13 @@
 import { signOut } from 'firebase/auth'
-import { auth } from '../firebase.js'
-import Card from './Card.jsx'
+import type { User } from 'firebase/auth'
+import { auth } from '../firebase'
+import Card from './Card'
 
-export default function Success({ user }) {
+interface SuccessProps {
+  user: User
+}
+
+export default function Success({ user }: SuccessProps) {
   return (
     <Card className="text-center">
       <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 text-3xl text-emerald-300 ring-1 ring-emerald-500/30">
@@ -21,7 +26,7 @@ export default function Success({ user }) {
 
       <div className="mt-6 rounded-2xl border border-cream/10 bg-forest-800/40 px-4 py-3 text-center">
         <p className="text-[11px] tracking-wide text-cream/40 uppercase">Signed in as</p>
-        <p className="mt-1 font-mono text-sm text-cream/85">{user.phoneNumber || user.uid}</p>
+        <p className="mt-1 font-mono text-sm text-cream/85">{user.phoneNumber ?? user.uid}</p>
       </div>
 
       <button

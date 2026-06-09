@@ -1,4 +1,8 @@
-export default function Spinner({ className = '' }) {
+interface SpinnerProps {
+  className?: string
+}
+
+export default function Spinner({ className = '' }: SpinnerProps) {
   return (
     <span
       className={`inline-block h-5 w-5 animate-spin rounded-full border-2 border-forest-950/30 border-t-forest-950 ${className}`}

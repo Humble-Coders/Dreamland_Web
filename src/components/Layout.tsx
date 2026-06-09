@@ -1,9 +1,13 @@
-import Logo from './Logo.jsx'
+import type { ReactNode } from 'react'
+import Logo from './Logo'
 
-export default function Layout({ children }) {
+interface LayoutProps {
+  children: ReactNode
+}
+
+export default function Layout({ children }: LayoutProps) {
   return (
     <div className="relative flex min-h-full flex-col overflow-hidden bg-forest-950">
-      {/* Ambient gold glow */}
       <div
         aria-hidden
         className="pointer-events-none absolute -top-40 left-1/2 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-gold-500/20 blur-[120px]"

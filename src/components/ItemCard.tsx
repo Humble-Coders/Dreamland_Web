@@ -1,13 +1,21 @@
-import { formatINR, unitPrice } from '../orders.js'
+import type { FoodItem, Service } from '../types/firestore'
+import { formatINR, unitPrice } from '../orders'
+
+interface ItemCardProps {
+  item: FoodItem | Service
+  qty: number
+  onChange: (qty: number) => void
+}
 
 // A single orderable item (food or service) with an add / quantity stepper.
-export default function ItemCard({ item, qty, onChange }) {
+// Shows a plain "Add" button at qty=0 and a +/− control once something is in the cart.
+export default function ItemCard({ item, qty, onChange }: ItemCardProps) {
   return (
     <div className="flex items-center gap-4 rounded-2xl border border-cream/10 bg-forest-900/50 p-4 transition-colors hover:border-gold-500/30">
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium text-cream">{item.name}</p>
         <p className="mt-0.5 text-sm text-gold-300">{formatINR(unitPrice(item))}</p>
-        {item.taxPercentage > 0 && (
+        {(item.taxPercentage ?? 0) > 0 && (
           <p className="mt-0.5 text-[11px] text-cream/40">incl. {item.taxPercentage}% tax</p>
         )}
       </div>

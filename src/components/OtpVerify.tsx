@@ -1,12 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
-import Card from './Card.jsx'
-import Spinner from './Spinner.jsx'
+import Card from './Card'
+import Spinner from './Spinner'
 
 const OTP_LENGTH = 6
 
-export default function OtpVerify({ maskedPhone, onConfirm, onBack, verifying, error }) {
-  const [digits, setDigits] = useState(Array(OTP_LENGTH).fill(''))
-  const inputsRef = useRef([])
+interface OtpVerifyProps {
+  maskedPhone: string
+  onConfirm: (code: string) => void
+  onBack: () => void
+  verifying: boolean
+  error: string
+}
+
+export default function OtpVerify({ maskedPhone, onConfirm, onBack, verifying, error }: OtpVerifyProps) {
+  const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''))
+  const inputsRef = useRef<(HTMLInputElement | null)[]>([])
 
   useEffect(() => {
     inputsRef.current[0]?.focus()
@@ -14,13 +22,12 @@ export default function OtpVerify({ maskedPhone, onConfirm, onBack, verifying, e
 
   const code = digits.join('')
 
-  const setDigit = (index, value) => {
+  const setDigit = (index: number, value: string) => {
     const clean = value.replace(/\D/g, '')
     if (!clean) {
       setDigits((prev) => prev.map((d, i) => (i === index ? '' : d)))
       return
     }
-    // Support pasting / typing several digits at once.
     setDigits((prev) => {
       const next = [...prev]
       const chars = clean.split('')
@@ -36,13 +43,13 @@ export default function OtpVerify({ maskedPhone, onConfirm, onBack, verifying, e
     })
   }
 
-  const handleKeyDown = (index, e) => {
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace' && !digits[index] && index > 0) {
       inputsRef.current[index - 1]?.focus()
     }
   }
 
-  const submit = (e) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault()
     if (code.length === OTP_LENGTH) onConfirm(code)
   }
@@ -61,7 +68,7 @@ export default function OtpVerify({ maskedPhone, onConfirm, onBack, verifying, e
           {digits.map((d, i) => (
             <input
               key={i}
-              ref={(el) => (inputsRef.current[i] = el)}
+              ref={(el) => { inputsRef.current[i] = el }}
               type="tel"
               inputMode="numeric"
               autoComplete={i === 0 ? 'one-time-code' : 'off'}

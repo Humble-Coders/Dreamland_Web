@@ -1,19 +1,25 @@
 import { useEffect, useRef, useState } from 'react'
 import { httpsCallable } from 'firebase/functions'
-import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth'
-import { auth, functions } from '../firebase.js'
-import Layout from './Layout.jsx'
-import Card from './Card.jsx'
-import Spinner from './Spinner.jsx'
-import InfoScreen from './InfoScreen.jsx'
-import PhoneSelect from './PhoneSelect.jsx'
-import OtpVerify from './OtpVerify.jsx'
+import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
+import { auth, functions } from '../firebase'
+import type { CheckInOption } from '../types/firestore'
+import Layout from './Layout'
+import Card from './Card'
+import Spinner from './Spinner'
+import InfoScreen from './InfoScreen'
+import PhoneSelect from './PhoneSelect'
+import OtpVerify from './OtpVerify'
+
+type Stage = 'loading' | 'select' | 'otp' | 'empty' | 'error'
 
 // Map raw Firebase auth errors to friendly, guest-appropriate messages.
-function friendlyAuthError(err) {
-  switch (err?.code) {
+// Firebase codes: firebase.google.com/docs/reference/js/auth#autherrorcodes
+function friendlyAuthError(err: unknown): string {
+  const code = (err as FirebaseError)?.code
+  switch (code) {
     case 'auth/invalid-verification-code':
-      return 'That code doesn’t look right. Please check and try again.'
+      return "That code doesn’t look right. Please check and try again."
     case 'auth/code-expired':
       return 'That code has expired. Please request a new one.'
     case 'auth/too-many-requests':
@@ -25,16 +31,20 @@ function friendlyAuthError(err) {
   }
 }
 
-export default function RoomEntry({ roomInstanceId }) {
-  const [stage, setStage] = useState('loading') // loading | select | otp | empty | error
-  const [guests, setGuests] = useState([])
-  const [selectedGuest, setSelectedGuest] = useState(null)
+interface RoomEntryProps {
+  roomInstanceId: string
+}
+
+export default function RoomEntry({ roomInstanceId }: RoomEntryProps) {
+  const [stage, setStage] = useState<Stage>('loading')
+  const [guests, setGuests] = useState<CheckInOption[]>([])
+  const [selectedGuest, setSelectedGuest] = useState<CheckInOption | null>(null)
   const [sending, setSending] = useState(false)
   const [verifying, setVerifying] = useState(false)
   const [error, setError] = useState('')
 
-  const recaptchaRef = useRef(null)
-  const confirmationRef = useRef(null)
+  const recaptchaRef = useRef<RecaptchaVerifier | null>(null)
+  const confirmationRef = useRef<ConfirmationResult | null>(null)
 
   // 1) Ask the backend for the registered numbers on this room's ACTIVE stays.
   //    The Cloud Function returns ONLY masked numbers plus an encrypted,
@@ -45,7 +55,10 @@ export default function RoomEntry({ roomInstanceId }) {
 
     async function loadGuests() {
       try {
-        const getOptions = httpsCallable(functions, 'getRoomCheckInOptions')
+        const getOptions = httpsCallable<{ roomInstanceId: string }, { options: CheckInOption[] }>(
+          functions,
+          'getRoomCheckInOptions',
+        )
         const res = await getOptions({ roomInstanceId })
         const options = res.data?.options ?? []
 
@@ -53,7 +66,7 @@ export default function RoomEntry({ roomInstanceId }) {
         if (options.length === 0) {
           setStage('empty')
         } else {
-          setGuests(options) // each: { token, maskedPhone, name }
+          setGuests(options)
           setStage('select')
         }
       } catch (err) {
@@ -68,7 +81,7 @@ export default function RoomEntry({ roomInstanceId }) {
     }
   }, [roomInstanceId])
 
-  function getRecaptcha() {
+  function getRecaptcha(): RecaptchaVerifier {
     if (!recaptchaRef.current) {
       recaptchaRef.current = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible',
@@ -88,16 +101,19 @@ export default function RoomEntry({ roomInstanceId }) {
     }
   }
 
-  // 2) Guest picks a number -> resolve the real number from its token (only
+  // 2) Guest picks a number → resolve the real number from its token (only
   //    now, server-side, after re-checking the stay is still ACTIVE), then send
   //    the OTP via Firebase phone auth. The full number lives only in this
   //    local variable long enough to trigger the SMS.
-  async function handleSelect(guest) {
+  async function handleSelect(guest: CheckInOption) {
     setError('')
     setSending(true)
     setSelectedGuest(guest)
     try {
-      const resolvePhone = httpsCallable(functions, 'resolveCheckInPhone')
+      const resolvePhone = httpsCallable<{ token: string }, { phoneNumber: string }>(
+        functions,
+        'resolveCheckInPhone',
+      )
       const res = await resolvePhone({ token: guest.token })
       const phoneNumber = res.data?.phoneNumber
       if (!phoneNumber) throw new Error('No phone number returned')
@@ -114,9 +130,9 @@ export default function RoomEntry({ roomInstanceId }) {
     }
   }
 
-  // 3) Guest enters the code -> confirm. Success flips global auth state,
-  //    and App.jsx swaps over to the access guard automatically.
-  async function handleConfirm(code) {
+  // 3) Guest enters the code → confirm. Success flips global auth state,
+  //    and App.tsx swaps over to the access guard automatically.
+  async function handleConfirm(code: string) {
     if (!confirmationRef.current) return
     setError('')
     setVerifying(true)
@@ -151,7 +167,7 @@ export default function RoomEntry({ roomInstanceId }) {
       <InfoScreen
         icon="🛎️"
         title="No active stay found"
-        message="We couldn’t find an active reservation for this room. If you’ve just checked in, please give it a moment, or contact the front desk for help."
+        message="We couldn't find an active reservation for this room. If you've just checked in, please give it a moment, or contact the front desk for help."
       />
     )
   } else if (stage === 'error') {
@@ -160,13 +176,13 @@ export default function RoomEntry({ roomInstanceId }) {
         tone="error"
         icon="⚠️"
         title="We hit a snag"
-        message="We couldn’t load your check-in details right now. Please try again, or reach out to the front desk."
+        message="We couldn't load your check-in details right now. Please try again, or reach out to the front desk."
       />
     )
   } else if (stage === 'otp') {
     content = (
       <OtpVerify
-        maskedPhone={selectedGuest?.maskedPhone}
+        maskedPhone={selectedGuest?.maskedPhone ?? ''}
         onConfirm={handleConfirm}
         onBack={handleBack}
         verifying={verifying}

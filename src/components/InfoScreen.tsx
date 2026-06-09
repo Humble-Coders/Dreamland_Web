@@ -1,17 +1,29 @@
-import Card from './Card.jsx'
+import type { ReactNode } from 'react'
+import Card from './Card'
+
+type InfoTone = 'neutral' | 'error' | 'success'
+
+interface InfoScreenProps {
+  icon: string
+  title: string
+  message: string
+  tone?: InfoTone
+  children?: ReactNode
+}
 
 // A simple, friendly status card used for empty / error / blocked states.
-export default function InfoScreen({ icon, title, message, tone = 'neutral', children }) {
-  const ring = {
+// Pass `children` to render an action button below the message.
+export default function InfoScreen({ icon, title, message, tone = 'neutral', children }: InfoScreenProps) {
+  const ring: Record<InfoTone, string> = {
     neutral: 'bg-gold-500/15 text-gold-300 ring-gold-500/30',
     error: 'bg-red-500/15 text-red-300 ring-red-500/30',
     success: 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30',
-  }[tone]
+  }
 
   return (
     <Card className="text-center">
       <div
-        className={`mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full text-3xl ring-1 ${ring}`}
+        className={`mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full text-3xl ring-1 ${ring[tone]}`}
       >
         {icon}
       </div>

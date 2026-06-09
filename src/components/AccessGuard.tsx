@@ -1,25 +1,27 @@
 import { useEffect, useState } from 'react'
 import { collection, onSnapshot, query, where } from 'firebase/firestore'
 import { signOut } from 'firebase/auth'
-import { auth, db } from '../firebase.js'
-import { isActiveStay, normalizePhone } from '../utils.js'
-import Layout from './Layout.jsx'
-import Card from './Card.jsx'
-import Spinner from './Spinner.jsx'
-import InfoScreen from './InfoScreen.jsx'
-import StayApp from './StayApp.jsx'
+import type { User } from 'firebase/auth'
+import { auth, db } from '../firebase'
+import { isActiveStay, normalizePhone } from '../utils'
+import type { Stay } from '../types/firestore'
+import Layout from './Layout'
+import Card from './Card'
+import Spinner from './Spinner'
+import InfoScreen from './InfoScreen'
+import StayApp from './StayApp'
 
 // Does this stay's guest list (or top-level guestPhone) include the given
 // E.164 phone? Phones in the data are bare locals, so normalize both sides.
-function stayHasPhone(stay, e164) {
-  const match = (p) => normalizePhone(p) === e164
+function stayHasPhone(stay: Stay, e164: string): boolean {
+  const match = (p: string | undefined) => normalizePhone(p) === e164
   if (Array.isArray(stay.guests) && stay.guests.some((g) => match(g?.phone))) return true
   return match(stay.guestPhone)
 }
 
 // The name registered against the given phone within a stay (so an order shows
 // who actually placed it, even when they're in a sibling room of the group).
-function matchedGuestName(stay, e164) {
+function matchedGuestName(stay: Stay, e164: string): string {
   const g = (stay.guests || []).find((x) => normalizePhone(x?.phone) === e164)
   if (g?.name) return g.name
   if (normalizePhone(stay.guestPhone) === e164) return stay.guestName || ''
@@ -32,15 +34,22 @@ function matchedGuestName(stay, e164) {
 //    group booking (groupStayId) — so a phone-bearing guest in a sibling room
 //    can authenticate for a room occupied only by guests without phones.
 // Fully client-side (catch-all rule allows authenticated stay reads).
-export default function AccessGuard({ user, roomInstanceId }) {
-  const [roomStay, setRoomStay] = useState(undefined) // undefined=loading | null=none | doc
-  const [authorized, setAuthorized] = useState(undefined) // undefined=checking | bool
+interface AccessGuardProps {
+  user: User
+  roomInstanceId: string
+}
+
+export default function AccessGuard({ user, roomInstanceId }: AccessGuardProps) {
+  // undefined=loading | null=no active stay found | Stay=loaded
+  const [roomStay, setRoomStay] = useState<Stay | null | undefined>(undefined)
+  // undefined=checking | true=authorized | false=denied
+  const [authorized, setAuthorized] = useState<boolean | undefined>(undefined)
   const [requesterName, setRequesterName] = useState('')
   const [errored, setErrored] = useState(false)
 
   const myPhone = normalizePhone(user.phoneNumber)
 
-  // A) The scanned room's active stay.
+  // A) Watch the scanned room's active stay in real time.
   useEffect(() => {
     if (!roomInstanceId) {
       setErrored(true)
@@ -51,7 +60,7 @@ export default function AccessGuard({ user, roomInstanceId }) {
       q,
       (snap) => {
         const doc = snap.docs.find((d) => isActiveStay(d.data()))
-        setRoomStay(doc ? { id: doc.id, ...doc.data() } : null)
+        setRoomStay(doc ? ({ id: doc.id, ...doc.data() } as Stay) : null)
       },
       (err) => {
         console.error('Room stay listener error', err)
@@ -68,7 +77,7 @@ export default function AccessGuard({ user, roomInstanceId }) {
       return
     }
     if (stayHasPhone(roomStay, myPhone)) {
-      setAuthorized(true) // registered in this very room
+      setAuthorized(true)
       setRequesterName(matchedGuestName(roomStay, myPhone))
       return
     }
@@ -86,8 +95,8 @@ export default function AccessGuard({ user, roomInstanceId }) {
         let name = ''
         const ok = snap.docs.some((d) => {
           const data = d.data()
-          if (isActiveStay(data) && stayHasPhone(data, myPhone)) {
-            name = matchedGuestName(data, myPhone)
+          if (isActiveStay(data) && stayHasPhone({ id: d.id, ...data } as Stay, myPhone)) {
+            name = matchedGuestName({ id: d.id, ...data } as Stay, myPhone)
             return true
           }
           return false
@@ -102,7 +111,7 @@ export default function AccessGuard({ user, roomInstanceId }) {
     )
   }, [roomStay, myPhone])
 
-  let access
+  let access: 'checking' | 'granted' | 'revoked' | 'error'
   if (errored) access = 'error'
   else if (roomStay === undefined || authorized === undefined) access = 'checking'
   else if (roomStay && authorized) access = 'granted'
@@ -147,11 +156,11 @@ export default function AccessGuard({ user, roomInstanceId }) {
           tone="error"
           icon="⚠️"
           title="We hit a snag"
-          message="We couldn’t verify your stay just now. Please check your connection and try again."
+          message="We couldn't verify your stay just now. Please check your connection and try again."
         />
       </Layout>
     )
   }
 
-  return <StayApp user={user} stay={roomStay} guestName={requesterName} />
+  return <StayApp user={user} stay={roomStay!} guestName={requesterName} />
 }

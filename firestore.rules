@@ -2,19 +2,70 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Pre-login phone lookup is handled by Cloud Functions (Admin SDK), so the
-    // browser never needs to read these collections unauthenticated.
+    // ── Landing page — public reads, no auth required ─────────────────────────
+    // Hotels, their room subcollections, and reviews are marketing data that
+    // must be readable by any visitor (unauthenticated browser).
 
-    // A signed-in guest may read ONLY their own stay documents — this is what
-    // the real-time access guard relies on. No client writes.
-    match /stays/{stayId} {
-      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+    match /hotels/{hotelId} {
+      allow read: if true;
+      allow write: if false;
+
+      match /rooms/{roomId} {
+        allow read: if true;
+        allow write: if false;
+      }
+
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+
+    // Hero banner images and other public app config (landing page).
+    match /appConfig/{docId} {
+      allow read: if true;
       allow write: if false;
     }
 
-    // A signed-in guest may read ONLY their own profile. No client writes.
-    match /users/{uid} {
-      allow read: if request.auth != null && request.auth.uid == uid;
+    // ── Guest app — authenticated reads ───────────────────────────────────────
+    // All collections below require a signed-in Firebase Auth user.
+
+    // Food menu — any authenticated guest may read; no client writes.
+    match /foodItems/{itemId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // Hotel services — any authenticated guest may read; no client writes.
+    match /services/{serviceId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // Orders — any authenticated guest may create and read orders.
+    // Deletion and updates are handled server-side only.
+    match /orders/{orderId} {
+      allow read:   if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.userId is string
+                    && request.resource.data.stayId  is string;
+      allow update, delete: if false;
+    }
+
+    // Stays — authenticated guests need to query by roomInstanceId and
+    // groupStayId (neither filter is the user's UID), so the rule allows any
+    // signed-in user to read. Business-logic checks (isActiveStay, stayHasPhone)
+    // are enforced client-side inside AccessGuard.tsx.
+    // NOTE: the previous rule checked `resource.data.uid` but the field is
+    //       named `userId` in the schema — that rule always denied the query.
+    match /stays/{stayId} {
+      allow read:  if request.auth != null;
+      allow write: if false;
+    }
+
+    // Users — a signed-in user may read only their own profile document.
+    match /users/{userId} {
+      allow read:  if request.auth != null && request.auth.uid == userId;
       allow write: if false;
     }
   }
