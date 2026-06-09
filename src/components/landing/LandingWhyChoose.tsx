@@ -42,7 +42,7 @@ export default function LandingWhyChoose() {
   return (
     <section
       ref={ref}
-      className="relative border-y border-gold-500/10 py-28 lg:py-36 overflow-hidden"
+      className="relative border-y border-gold-500/10 py-16 sm:py-24 lg:py-36 overflow-hidden"
     >
       {/* Warm gold tint across the section to break visual rhythm */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_100%_80%_at_50%_50%,rgba(212,175,55,0.05),transparent)]" />
@@ -68,22 +68,22 @@ export default function LandingWhyChoose() {
           variants={staggerChildren(0.12, 0.2)}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4"
         >
           {TRUST_ITEMS.map((item) => (
             <motion.div
               key={item.title}
               variants={scaleIn}
-              className="group flex flex-col items-center gap-5 rounded-2xl border border-cream/8 bg-forest-900/30 p-8 text-center backdrop-blur-sm transition-all duration-300 hover:border-gold-500/30 hover:bg-forest-900/50"
+              className="group flex flex-col items-center gap-4 rounded-2xl border border-cream/8 bg-forest-900/30 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-gold-500/30 hover:bg-forest-900/50 sm:gap-5 sm:p-8"
             >
               {/* Icon ring */}
-              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-gold-500/30 bg-gold-500/10 text-2xl text-gold-400 transition-transform duration-300 group-hover:scale-110 group-hover:shadow-[0_0_24px_rgba(212,175,55,0.2)]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gold-500/30 bg-gold-500/10 text-xl text-gold-400 transition-transform duration-300 group-hover:scale-110 group-hover:shadow-[0_0_24px_rgba(212,175,55,0.2)] sm:h-16 sm:w-16 sm:text-2xl">
                 {item.icon}
               </div>
 
               <div>
-                <h3 className="font-display text-xl text-cream">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-cream/50">{item.desc}</p>
+                <h3 className="font-display text-base text-cream sm:text-xl">{item.title}</h3>
+                <p className="mt-1.5 text-xs leading-relaxed text-cream/50 sm:mt-2 sm:text-sm">{item.desc}</p>
               </div>
 
               {/* Gold bottom accent line — appears on hover */}

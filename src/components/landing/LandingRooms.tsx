@@ -2,6 +2,8 @@ import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import SectionHeading from './ui/SectionHeading'
 import { staggerChildren, fadeUp, slideLeft } from './ui/MotionVariants'
+import Img from './ui/Img'
+import { imgUrl } from '../../utils/imgUrl'
 import type { HotelRoom } from '../../hooks/useLandingData'
 
 interface Room {
@@ -40,13 +42,13 @@ export default function LandingRooms({ rooms }: Props) {
   const displayRooms = rooms?.map(toDisplayRoom) ?? []
 
   return (
-    <section id="rooms" ref={ref} className="py-28 lg:py-36">
+    <section id="rooms" ref={ref} className="py-16 sm:py-24 lg:py-36">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <motion.div
           variants={staggerChildren(0.12)}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="mb-20"
+          className="mb-12 sm:mb-20"
         >
           <SectionHeading
             label="Featured Suites"
@@ -56,7 +58,7 @@ export default function LandingRooms({ rooms }: Props) {
         </motion.div>
 
         {displayRooms.length > 0 && (
-          <div className="space-y-24">
+          <div className="space-y-14 sm:space-y-20 lg:space-y-24">
             {displayRooms.map((room, index) => (
               <RoomCard key={room.id} room={room} index={index} isInView={isInView} />
             ))}
@@ -80,7 +82,7 @@ function RoomCard({ room, index, isInView }: { room: Room; index: number; isInVi
       }`}
     >
       {/* Image */}
-      <motion.div variants={slideLeft} className="group relative overflow-hidden rounded-2xl">
+      <motion.div variants={slideLeft} className="group relative overflow-hidden rounded-2xl bg-forest-900">
         <div className="absolute top-5 left-5 z-10 rounded-full border border-gold-500/40 bg-forest-950/70 px-4 py-1.5 backdrop-blur-sm">
           <span className="text-xs font-medium tracking-[0.25em] text-gold-400 uppercase">{room.category}</span>
         </div>
@@ -97,8 +99,8 @@ function RoomCard({ room, index, isInView }: { room: Room; index: number; isInVi
           )}
         </div>
         {room.image && (
-          <img
-            src={room.image}
+          <Img
+            src={imgUrl(room.image, 800)}
             alt={room.name}
             className="aspect-[4/3] w-full object-cover transition-transform duration-700 group-hover:scale-105"
             loading="lazy"
@@ -111,7 +113,7 @@ function RoomCard({ room, index, isInView }: { room: Room; index: number; isInVi
       <div className="flex flex-col gap-6">
         <motion.div variants={fadeUp}>
           <p className="mb-2 text-xs font-medium tracking-[0.35em] text-gold-400 uppercase">{room.category} Room</p>
-          <h3 className="font-display text-4xl text-cream lg:text-5xl">{room.name}</h3>
+          <h3 className="font-display text-3xl text-cream sm:text-4xl lg:text-5xl">{room.name}</h3>
         </motion.div>
 
         {room.desc && (

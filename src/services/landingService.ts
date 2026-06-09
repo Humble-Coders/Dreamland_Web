@@ -84,7 +84,12 @@ export interface Hotel {
   petPolicy?: boolean
   // Transport modes (how to reach the hotel)
   modes?: HotelMode[]
-  // Ratings
+  // Ratings (flat fields matching Firestore / Android model)
+  ratingCleanliness?: number
+  ratingFood?: number
+  ratingStaff?: number
+  ratingLocation?: number
+  ratingValue?: number
   ratingBreakdown?: RatingBreakdown
   // Policies
   pdfRequired?: boolean
@@ -227,6 +232,62 @@ export async function getLandingData(): Promise<LandingData> {
     .map((d) => ({ id: d.id, ...d.data() } as HotelReview))
     .filter((r) => r.comment && (r.rating ?? 0) >= 4)
     .slice(0, 6)
+
+  const attractions = (attractionsSnap?.docs ?? []).map(
+    (d) => ({ id: d.id, ...d.data() } as Attraction),
+  )
+
+  const travelList = (travelSnap?.docs ?? []).map(
+    (d) => ({ id: d.id, ...d.data() } as TravelActivity),
+  )
+
+  return { hotel, rooms, reviews, attractions, travelList, headerMedia }
+}
+
+export async function getRoomById(roomId: string): Promise<{ room: HotelRoom; hotel: Hotel | null } | null> {
+  try {
+    const snap = await getDoc(doc(db, 'rooms', roomId))
+    if (!snap.exists()) return null
+    const room = { id: snap.id, ...snap.data() } as HotelRoom
+    const hotel = room.hotelId
+      ? await getDoc(doc(db, 'hotels', room.hotelId))
+          .then((h) => (h.exists() ? ({ id: h.id, ...h.data() } as Hotel) : null))
+          .catch(() => null)
+      : null
+    return { room, hotel }
+  } catch {
+    return null
+  }
+}
+
+export async function getHotelDetailById(hotelId: string): Promise<LandingData> {
+  const [hotelSnap, headerMedia] = await Promise.all([
+    getDoc(doc(db, 'hotels', hotelId)),
+    getHeaderMedia(),
+  ])
+
+  if (!hotelSnap.exists()) {
+    return { hotel: null, rooms: [], reviews: [], attractions: [], travelList: [], headerMedia }
+  }
+
+  const hotel = { id: hotelSnap.id, ...hotelSnap.data() } as Hotel
+  const silent = () => null
+
+  const [roomsSnap, reviewsSnap, attractionsSnap, travelSnap] = await Promise.all([
+    getDocs(query(collection(db, 'rooms'), where('hotelId', '==', hotel.id))).catch(silent),
+    getDocs(query(collection(db, 'hotels', hotel.id, 'reviews'), limit(10))).catch(silent),
+    getDocs(query(collection(db, 'attractions'), where('hotelId', '==', hotel.id))).catch(silent),
+    getDocs(query(collection(db, 'travelList'), where('hotelId', '==', hotel.id))).catch(silent),
+  ])
+
+  const rooms = (roomsSnap?.docs ?? [])
+    .map((d) => ({ id: d.id, ...d.data() } as HotelRoom))
+    .filter((r) => r.available !== false)
+
+  const reviews = (reviewsSnap?.docs ?? [])
+    .map((d) => ({ id: d.id, ...d.data() } as HotelReview))
+    .filter((r) => r.comment && (r.rating ?? 0) >= 4)
+    .slice(0, 5)
 
   const attractions = (attractionsSnap?.docs ?? []).map(
     (d) => ({ id: d.id, ...d.data() } as Attraction),

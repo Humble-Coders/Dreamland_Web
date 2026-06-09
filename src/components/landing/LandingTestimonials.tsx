@@ -81,7 +81,7 @@ export default function LandingTestimonials({ reviews }: Props) {
   const t = testimonials[active] ?? testimonials[0]
 
   return (
-    <section id="testimonials" ref={ref} className="relative py-28 lg:py-36 overflow-hidden">
+    <section id="testimonials" ref={ref} className="relative py-16 sm:py-24 lg:py-36 overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,rgba(212,175,55,0.05),transparent)]" />
 
       <div className="relative z-10 mx-auto max-w-5xl px-6 lg:px-10">
@@ -104,7 +104,7 @@ export default function LandingTestimonials({ reviews }: Props) {
             "
           </div>
 
-          <div className="relative min-h-56 overflow-hidden rounded-2xl border border-cream/8 bg-forest-900/40 px-8 py-10 backdrop-blur-sm md:px-14 md:py-14">
+          <div className="relative min-h-56 overflow-hidden rounded-2xl border border-cream/8 bg-forest-900/40 px-5 py-8 backdrop-blur-sm sm:px-8 sm:py-10 md:px-14 md:py-14">
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={active}
@@ -118,7 +118,7 @@ export default function LandingTestimonials({ reviews }: Props) {
                 <div className="mb-6 flex justify-center gap-1 text-gold-400 text-sm">
                   {'★'.repeat(t.rating)}
                 </div>
-                <blockquote className="font-display text-xl italic leading-relaxed text-cream/85 sm:text-2xl">
+                <blockquote className="font-display text-lg italic leading-relaxed text-cream/85 sm:text-xl lg:text-2xl">
                   "{t.quote}"
                 </blockquote>
                 <div className="mt-8 flex flex-col items-center gap-1">

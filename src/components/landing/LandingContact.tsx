@@ -52,7 +52,7 @@ export default function LandingContact({ hotel }: Props) {
     'w-full rounded-xl border border-cream/10 bg-forest-900/50 px-4 py-3.5 text-sm text-cream placeholder-cream/25 outline-none transition-all duration-200 focus:border-gold-500/50 focus:bg-forest-900/70 focus:ring-2 focus:ring-gold-500/10'
 
   return (
-    <section id="contact" ref={ref} className="py-28 lg:py-36">
+    <section id="contact" ref={ref} className="py-16 sm:py-24 lg:py-36">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 lg:grid-cols-2 lg:px-10">
 
         {/* Left */}
@@ -127,7 +127,7 @@ export default function LandingContact({ hotel }: Props) {
           ) : (
             <form
               onSubmit={handleSubmit}
-              className="rounded-2xl border border-cream/8 bg-forest-900/40 p-8 backdrop-blur-sm"
+              className="rounded-2xl border border-cream/8 bg-forest-900/40 p-5 backdrop-blur-sm sm:p-8"
             >
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-1.5">

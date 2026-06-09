@@ -33,6 +33,7 @@ body {
   background-color: var(--color-forest-950);
   color: var(--color-cream);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 /* Subtle luxe entrance animations */

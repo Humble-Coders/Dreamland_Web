@@ -48,7 +48,7 @@ export default function LandingLocation({ hotel, attractions }: Props) {
   const modes = hotel?.modes ?? []
 
   return (
-    <section id="location" ref={ref} className="py-28 lg:py-36 bg-forest-900/20">
+    <section id="location" ref={ref} className="py-16 sm:py-24 lg:py-36 bg-forest-900/20">
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-start gap-16 px-6 lg:grid-cols-2 lg:px-10">
 
         {/* Left: map visual */}

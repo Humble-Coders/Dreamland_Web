@@ -1,6 +1,8 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { staggerChildren, fadeIn, fadeUp } from './ui/MotionVariants'
+import Img from './ui/Img'
+import { imgUrl } from '../../utils/imgUrl'
 import type { Hotel } from '../../hooks/useLandingData'
 
 interface Props {
@@ -23,13 +25,14 @@ export default function LandingHero({ heroImages, hotel }: Props) {
   return (
     <section id="hero" ref={heroRef} className="relative flex min-h-screen items-center justify-center overflow-hidden">
       {/* Parallax background */}
-      <motion.div style={{ y: bgY }} className="absolute inset-0 -z-10 scale-110">
+      <motion.div style={{ y: bgY }} className="absolute inset-0 -z-10 scale-110 bg-forest-950">
         {bgImage && (
-          <img
-            src={bgImage}
+          <Img
+            src={imgUrl(bgImage, 1920)}
             alt={hotel?.name ?? ''}
             className="h-full w-full object-cover"
             loading="eager"
+            fetchPriority="high"
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-forest-950/70 via-forest-950/50 to-forest-950/80" />
@@ -45,21 +48,21 @@ export default function LandingHero({ heroImages, hotel }: Props) {
           variants={staggerChildren(0.15, 0.4)}
           initial="hidden"
           animate="visible"
-          className="flex flex-col items-center gap-6"
+          className="flex flex-col items-center gap-4 sm:gap-6"
         >
           {(hotel?.name || hotel?.city) && (
-            <motion.div variants={fadeIn} className="flex items-center gap-4">
-              <div className="h-px w-12 bg-gold-500/40" />
-              <span className="text-xs font-medium tracking-[0.5em] text-gold-400 uppercase">
+            <motion.div variants={fadeIn} className="flex items-center gap-3">
+              <div className="h-px w-8 shrink-0 bg-gold-500/40 sm:w-12" />
+              <span className="text-[10px] font-medium tracking-[0.3em] text-gold-400 uppercase sm:text-xs sm:tracking-[0.5em]">
                 {[hotel.name, hotel.city].filter(Boolean).join(' · ')}
               </span>
-              <div className="h-px w-12 bg-gold-500/40" />
+              <div className="h-px w-8 shrink-0 bg-gold-500/40 sm:w-12" />
             </motion.div>
           )}
 
           <motion.h1
             variants={fadeUp}
-            className="font-display text-6xl leading-[0.95] text-cream sm:text-7xl lg:text-8xl xl:text-[104px]"
+            className="font-display text-5xl leading-[0.95] text-cream sm:text-6xl lg:text-8xl xl:text-[104px]"
           >
             Your Next Stay
             <span className="block text-gold-400">Awaits</span>
@@ -81,7 +84,7 @@ export default function LandingHero({ heroImages, hotel }: Props) {
             <button
               type="button"
               onClick={() => document.querySelector('#rooms')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group flex items-center gap-2 rounded-full bg-gold-500 px-8 py-3.5 text-sm font-semibold text-forest-950 shadow-[0_8px_32px_rgba(212,175,55,0.35)] transition-all hover:bg-gold-400 hover:shadow-[0_12px_40px_rgba(212,175,55,0.45)]"
+              className="group flex items-center gap-2 rounded-full bg-gold-500 px-6 py-3 text-sm font-semibold text-forest-950 shadow-[0_8px_32px_rgba(212,175,55,0.35)] transition-all hover:bg-gold-400 hover:shadow-[0_12px_40px_rgba(212,175,55,0.45)] sm:px-8 sm:py-3.5"
             >
               Explore Rooms
               <span className="transition-transform group-hover:translate-x-0.5">→</span>
@@ -89,7 +92,7 @@ export default function LandingHero({ heroImages, hotel }: Props) {
             <button
               type="button"
               onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group flex items-center gap-2 rounded-full border border-cream/25 px-8 py-3.5 text-sm font-medium text-cream/80 transition-all hover:border-gold-400/50 hover:text-gold-300"
+              className="group flex items-center gap-2 rounded-full border border-cream/25 px-6 py-3 text-sm font-medium text-cream/80 transition-all hover:border-gold-400/50 hover:text-gold-300 sm:px-8 sm:py-3.5"
             >
               Contact Us
             </button>

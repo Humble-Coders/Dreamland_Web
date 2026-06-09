@@ -2,6 +2,8 @@ import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import SectionHeading from './ui/SectionHeading'
 import { staggerChildren, slideLeft, slideRight, fadeUp } from './ui/MotionVariants'
+import Img from './ui/Img'
+import { imgUrl } from '../../utils/imgUrl'
 import type { Hotel } from '../../hooks/useLandingData'
 
 interface Props {
@@ -23,8 +25,8 @@ export default function LandingAbout({ hotel }: Props) {
   ].filter(Boolean) as { value: string; label: string }[]
 
   return (
-    <section id="about" ref={ref} className="py-28 lg:py-36">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-6 lg:grid-cols-2 lg:px-10">
+    <section id="about" ref={ref} className="py-16 sm:py-24 lg:py-36">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 lg:grid-cols-2 lg:gap-16 lg:px-10">
 
         {/* Left: image */}
         <motion.div
@@ -33,18 +35,18 @@ export default function LandingAbout({ hotel }: Props) {
           animate={isInView ? 'visible' : 'hidden'}
           className="relative"
         >
-          <div className="absolute -top-4 -left-4 h-full w-full rounded-2xl border border-gold-500/20" />
+          <div className="absolute -top-4 -left-4 h-full w-full rounded-2xl border border-gold-500/20 hidden sm:block" />
           {image && (
-            <img
-              src={image}
+            <Img
+              src={imgUrl(image, 800)}
               alt={hotel?.name ?? ''}
-              className="relative z-10 aspect-[4/5] w-full rounded-2xl object-cover shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
+              className="relative z-10 aspect-[4/5] w-full rounded-2xl object-cover shadow-[0_32px_80px_rgba(0,0,0,0.6)] bg-forest-900"
               loading="lazy"
             />
           )}
           {(locationLabel || locationSub) && (
-            <div className="absolute -bottom-6 -right-6 z-20 rounded-2xl border border-gold-500/25 bg-forest-900/90 px-6 py-4 backdrop-blur-sm">
-              {locationLabel && <p className="font-display text-2xl text-gold-400">{locationLabel}</p>}
+            <div className="absolute bottom-4 right-4 z-20 rounded-2xl border border-gold-500/25 bg-forest-900/90 px-4 py-3 backdrop-blur-sm sm:-bottom-6 sm:-right-6 sm:px-6 sm:py-4">
+              {locationLabel && <p className="font-display text-lg sm:text-2xl text-gold-400">{locationLabel}</p>}
               {locationSub && <p className="text-xs tracking-widest text-cream/50 uppercase">{locationSub}</p>}
             </div>
           )}

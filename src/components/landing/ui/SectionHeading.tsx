@@ -1,7 +1,4 @@
-// Reusable section heading used by every landing section.
-// Renders an ornamental label, a large display title, optional subtitle,
-// and a decorative gold divider — all as Framer Motion children so the
-// parent's stagger variant animates them in sequence.
+import { Fragment } from 'react'
 import { motion } from 'framer-motion'
 import { fadeUp } from './MotionVariants'
 
@@ -10,7 +7,7 @@ interface SectionHeadingProps {
   title: string
   subtitle?: string
   align?: 'left' | 'center'
-  onDark?: boolean // true (default) = cream text; false = dark text for light bg
+  onDark?: boolean
 }
 
 export default function SectionHeading({
@@ -23,6 +20,7 @@ export default function SectionHeading({
   const center = align === 'center'
   const titleColor = onDark ? 'text-cream' : 'text-forest-950'
   const bodyColor = onDark ? 'text-cream/55' : 'text-forest-800/70'
+  const lines = title.split('\n')
 
   return (
     <div className={`flex flex-col gap-3 ${center ? 'items-center text-center' : 'items-start text-left'}`}>
@@ -33,12 +31,17 @@ export default function SectionHeading({
         <span className="text-gold-400 text-xs">✦</span>
       </motion.div>
 
-      {/* Title */}
+      {/* Title — supports \n for line breaks */}
       <motion.h2
         variants={fadeUp}
-        className={`font-display text-4xl leading-tight sm:text-5xl lg:text-6xl ${titleColor}`}
+        className={`font-display text-3xl leading-tight sm:text-4xl lg:text-6xl ${titleColor}`}
       >
-        {title}
+        {lines.map((line, i) => (
+          <Fragment key={i}>
+            {i > 0 && <br />}
+            {line}
+          </Fragment>
+        ))}
       </motion.h2>
 
       {/* Gold divider */}
@@ -55,7 +58,7 @@ export default function SectionHeading({
       {subtitle && (
         <motion.p
           variants={fadeUp}
-          className={`text-base leading-relaxed ${bodyColor} ${center ? 'mx-auto max-w-xl' : 'max-w-lg'}`}
+          className={`text-sm leading-relaxed sm:text-base ${bodyColor} ${center ? 'mx-auto max-w-xl' : 'max-w-lg'}`}
         >
           {subtitle}
         </motion.p>

@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import SectionHeading from './ui/SectionHeading'
 import { staggerChildren, scaleIn, fadeIn } from './ui/MotionVariants'
+import Img from './ui/Img'
+import { imgUrl } from '../../utils/imgUrl'
 
 interface GalleryItem {
   src: string
@@ -69,7 +71,7 @@ export default function LandingGallery({ photos }: Props) {
 
   return (
     <>
-      <section id="gallery" ref={ref} className="py-28 lg:py-36 bg-forest-900/15">
+      <section id="gallery" ref={ref} className="py-16 sm:py-24 lg:py-36 bg-forest-900/15">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <motion.div
             variants={staggerChildren(0.12)}
@@ -96,13 +98,13 @@ export default function LandingGallery({ photos }: Props) {
                 type="button"
                 variants={scaleIn}
                 onClick={() => openLightbox(index)}
-                className={`group relative cursor-pointer overflow-hidden rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-gold-400 ${item.span ?? ''}`}
+                className={`group relative cursor-pointer overflow-hidden rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-gold-400 bg-forest-900 ${item.span ?? ''}`}
                 aria-label={`View ${item.label}`}
               >
-                <img
-                  src={item.src}
+                <Img
+                  src={imgUrl(item.src, 600)}
                   alt={item.label}
-                  className="h-full min-h-44 w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="h-full min-h-32 w-full object-cover transition-transform duration-700 group-hover:scale-105 sm:min-h-44"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 flex flex-col items-start justify-end bg-gradient-to-t from-forest-950/80 via-forest-950/10 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">

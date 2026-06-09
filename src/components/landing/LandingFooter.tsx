@@ -53,10 +53,10 @@ export default function LandingFooter({ hotel }: Props) {
       </div>
 
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 md:gap-12 lg:grid-cols-4">
 
           {/* Brand */}
-          <div className="lg:col-span-2">
+          <div className="col-span-2 lg:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <Logo className="h-10 w-10 rounded-xl object-contain opacity-80" />
               <div>
