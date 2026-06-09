@@ -24,7 +24,7 @@ export default function Landing() {
       <LandingRooms rooms={rooms} />
       <LandingWhyChoose />
       <LandingTestimonials reviews={reviews} />
-      {/* <LandingGallery photos={hotel?.photos} /> */}
+      <LandingGallery photos={hotel?.photos} />
       {/* <LandingAmenities hotel={hotel} /> */}
       <LandingLocation hotel={hotel} attractions={attractions} />
       <LandingContact hotel={hotel} />
