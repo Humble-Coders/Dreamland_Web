@@ -4,6 +4,7 @@ import SectionHeading from './ui/SectionHeading'
 import { staggerChildren, scaleIn, fadeIn } from './ui/MotionVariants'
 import Img from './ui/Img'
 import { imgUrl } from '../../utils/imgUrl'
+import { LOCAL_PHOTOS } from '../../data/localImages'
 
 interface GalleryItem {
   src: string
@@ -34,7 +35,9 @@ export default function LandingGallery({ photos }: Props) {
   const isInView = useInView(ref, { once: true, amount: 0.1 })
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
-  const gallery: GalleryItem[] = photosToGallery(photos ?? [])
+  const gallery: GalleryItem[] = photosToGallery(
+    (photos && photos.length > 0) ? photos : LOCAL_PHOTOS
+  )
 
   const closeLightbox = useCallback(() => {
     setLightboxIndex(null)

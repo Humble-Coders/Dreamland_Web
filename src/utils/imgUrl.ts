@@ -12,6 +12,8 @@ const CLOUD_NAME = (import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string | undef
 
 export function imgUrl(src: string | undefined | null, width?: number): string {
   if (!src) return ''
+  // Local public-folder paths — already optimised (avif/jpeg), skip Cloudinary
+  if (src.startsWith('/')) return src
   if (!CLOUD_NAME) return src
   const transforms = ['f_auto', 'q_auto', ...(width ? [`w_${width},c_limit`] : [])].join(',')
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/fetch/${transforms}/${encodeURIComponent(src)}`

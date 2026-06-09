@@ -186,16 +186,35 @@ function normalizeHeaderMedia(raw: unknown): string[] {
     .filter((url): url is string => Boolean(url))
 }
 
+// ── Local image injection ─────────────────────────────────────────────────────
+
+import { LOCAL_PHOTOS, HEADER_PHOTOS } from '../data/localImages'
+
+// Round-robin local photos into an array of length n, starting at offset
+function localPhotos(n: number, offset = 0): string[] {
+  if (LOCAL_PHOTOS.length === 0 || n <= 0) return []
+  return Array.from({ length: n }, (_, i) => LOCAL_PHOTOS[(offset + i) % LOCAL_PHOTOS.length])
+}
+
+// Replace all photo/media arrays on a hotel with local images
+function injectHotelPhotos(hotel: Hotel): Hotel {
+  return { ...hotel, photos: LOCAL_PHOTOS }
+}
+
+// Spread local images across rooms so each gets distinct photos
+function injectRoomPhotos(rooms: HotelRoom[]): HotelRoom[] {
+  return rooms.map((room, i) => ({
+    ...room,
+    // 3 photos per room, cycling through LOCAL_PHOTOS
+    media: localPhotos(3, i * 3),
+  }))
+}
+
 // ── Service ───────────────────────────────────────────────────────────────────
 
 export async function getHeaderMedia(): Promise<string[]> {
-  try {
-    const snap = await getDoc(doc(db, 'appConfig', 'header'))
-    if (!snap.exists()) return []
-    return normalizeHeaderMedia(snap.data().headerMedia)
-  } catch {
-    return []
-  }
+  // Always use local hero images — fast, no Firestore read needed for media
+  return HEADER_PHOTOS
 }
 
 export async function getHotels(): Promise<Hotel[]> {
@@ -241,7 +260,14 @@ export async function getLandingData(): Promise<LandingData> {
     (d) => ({ id: d.id, ...d.data() } as TravelActivity),
   )
 
-  return { hotel, rooms, reviews, attractions, travelList, headerMedia }
+  return {
+    hotel: injectHotelPhotos(hotel),
+    rooms: injectRoomPhotos(rooms),
+    reviews,
+    attractions,
+    travelList,
+    headerMedia,
+  }
 }
 
 export async function getRoomById(roomId: string): Promise<{ room: HotelRoom; hotel: Hotel | null } | null> {
@@ -254,7 +280,10 @@ export async function getRoomById(roomId: string): Promise<{ room: HotelRoom; ho
           .then((h) => (h.exists() ? ({ id: h.id, ...h.data() } as Hotel) : null))
           .catch(() => null)
       : null
-    return { room, hotel }
+    return {
+      room: { ...room, media: LOCAL_PHOTOS },
+      hotel: hotel ? injectHotelPhotos(hotel) : null,
+    }
   } catch {
     return null
   }
@@ -297,5 +326,12 @@ export async function getHotelDetailById(hotelId: string): Promise<LandingData> 
     (d) => ({ id: d.id, ...d.data() } as TravelActivity),
   )
 
-  return { hotel, rooms, reviews, attractions, travelList, headerMedia }
+  return {
+    hotel: injectHotelPhotos(hotel),
+    rooms: injectRoomPhotos(rooms),
+    reviews,
+    attractions,
+    travelList,
+    headerMedia,
+  }
 }

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useMobileData } from '../hooks/useMobileData'
 import MobileHeroCarousel from '../components/MobileHeroCarousel'
 import MobileHotelCard from '../components/MobileHotelCard'
@@ -15,6 +16,13 @@ const TRUST = [
 
 export default function MobileHome() {
   const { hotels, headerMedia, rooms, reviews, galleryPhotos, loading, error } = useMobileData()
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   const firstHotel = hotels[0]
   const waNumber = firstHotel?.contactPhone?.replace(/[\s+\-().]/g, '') ?? ''
@@ -23,7 +31,13 @@ export default function MobileHome() {
   return (
     <div className="min-h-screen bg-forest-950 text-cream">
       {/* Sticky top nav */}
-      <nav className="fixed inset-x-0 top-0 z-40 flex items-center px-5 py-3">
+      <nav
+        className={`fixed inset-x-0 top-0 z-40 flex items-center px-5 py-3 transition-all duration-300 ${
+          scrolled
+            ? 'border-b border-cream/[0.07] bg-forest-950/80 backdrop-blur-md'
+            : 'bg-transparent'
+        }`}
+      >
         <button
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
