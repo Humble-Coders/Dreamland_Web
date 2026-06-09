@@ -1,14 +1,20 @@
-// Sticky transparent navbar that transitions to a frosted-glass panel on scroll.
-// Includes a full mobile menu with AnimatePresence for smooth open/close.
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useScroll } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import Logo from '../Logo'
 import type { Hotel } from '../../hooks/useLandingData'
 
-const NAV_LINKS = [
-  { label: 'About', href: '#about' },
-  { label: 'Rooms', href: '#rooms' },
+const TABS = [
+  { label: 'Home',     path: '/' },
+  { label: 'Hotels',   path: '/hotels' },
+  { label: 'Bookings', path: '/bookings', auth: true },
+  { label: 'Profile',  path: '/profile',  auth: true },
+]
+
+// Anchor links shown as sub-nav only on the home page
+const HOME_ANCHORS = [
+  { label: 'About',   href: '#about' },
+  { label: 'Rooms',   href: '#rooms' },
   { label: 'Gallery', href: '#gallery' },
   { label: 'Contact', href: '#contact' },
 ]
@@ -18,19 +24,21 @@ interface Props {
 }
 
 export default function LandingNav({ hotel }: Props) {
-  const hotelName = hotel?.name ?? ''
+  const hotelName     = hotel?.name ?? ''
   const hotelLocation = [hotel?.city, hotel?.country].filter(Boolean).join(', ')
-  const navigate = useNavigate()
-  const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
+  const navigate      = useNavigate()
+  const location      = useLocation()
+  const [scrolled, setScrolled]   = useState(false)
+  const [menuOpen, setMenuOpen]   = useState(false)
   const { scrollY } = useScroll()
 
-  // Switch from transparent to glass when user scrolls past 60 px.
-  useEffect(() => {
-    return scrollY.on('change', (v) => setScrolled(v > 60))
-  }, [scrollY])
+  const isHome = location.pathname === '/'
+  const activeTab = TABS.find((t) =>
+    t.path === '/' ? location.pathname === '/' : location.pathname.startsWith(t.path),
+  )?.path ?? '/'
 
-  // Close mobile menu on resize to desktop.
+  useEffect(() => scrollY.on('change', (v) => setScrolled(v > 60)), [scrollY])
+
   useEffect(() => {
     const handler = () => { if (window.innerWidth >= 768) setMenuOpen(false) }
     window.addEventListener('resize', handler)
@@ -40,6 +48,11 @@ export default function LandingNav({ hotel }: Props) {
   const scrollTo = (href: string) => {
     setMenuOpen(false)
     document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const goTo = (path: string) => {
+    setMenuOpen(false)
+    navigate(path)
   }
 
   return (
@@ -58,35 +71,64 @@ export default function LandingNav({ hotel }: Props) {
           {/* Logo */}
           <button
             type="button"
-            onClick={() => scrollTo('#hero')}
+            onClick={() => goTo('/')}
             className="flex items-center gap-3 group"
           >
             <Logo className="h-9 w-9 rounded-lg object-contain opacity-90 transition-opacity group-hover:opacity-100" />
             <div className="leading-tight">
               <p className="font-display text-base text-cream tracking-wide">{hotelName}</p>
-              <p className="text-[9px] tracking-[0.3em] text-gold-400/70 uppercase">{hotelLocation}</p>
+              {hotelLocation && (
+                <p className="text-[9px] tracking-[0.3em] text-gold-400/70 uppercase">{hotelLocation}</p>
+              )}
             </div>
           </button>
 
-          {/* Desktop links */}
-          <div className="hidden items-center gap-8 md:flex">
-            {NAV_LINKS.map((link) => (
-              <button
-                key={link.href}
-                type="button"
-                onClick={() => scrollTo(link.href)}
-                className="text-sm tracking-wide text-cream/65 transition-colors hover:text-gold-300"
-              >
-                {link.label}
-              </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => navigate('/app')}
-              className="rounded-full border border-gold-500/40 bg-gold-500/10 px-5 py-2 text-sm font-medium text-gold-300 transition-all hover:bg-gold-500/20 hover:border-gold-400"
-            >
-              Guest App
-            </button>
+          {/* Desktop tabs */}
+          <div className="hidden items-center gap-1 md:flex">
+            {TABS.map((tab) => {
+              const active = activeTab === tab.path
+              return (
+                <button
+                  key={tab.path}
+                  type="button"
+                  onClick={() => goTo(tab.path)}
+                  className={`relative px-4 py-2 text-sm font-medium transition-colors rounded-lg ${
+                    active
+                      ? 'text-gold-400'
+                      : 'text-cream/50 hover:text-cream/80'
+                  }`}
+                >
+                  {tab.label}
+                  {tab.auth && !active && (
+                    <span className="absolute right-3 top-2 h-1 w-1 rounded-full bg-cream/25" />
+                  )}
+                  {active && (
+                    <motion.span
+                      layoutId="nav-active-pill"
+                      className="absolute inset-0 rounded-lg bg-gold-500/10 border border-gold-500/20"
+                      transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                    />
+                  )}
+                </button>
+              )
+            })}
+
+            {/* Divider */}
+            {isHome && (
+              <>
+                <div className="mx-2 h-4 w-px bg-cream/15" />
+                {HOME_ANCHORS.map((link) => (
+                  <button
+                    key={link.href}
+                    type="button"
+                    onClick={() => scrollTo(link.href)}
+                    className="px-3 py-2 text-sm text-cream/45 transition-colors hover:text-gold-300"
+                  >
+                    {link.label}
+                  </button>
+                ))}
+              </>
+            )}
           </div>
 
           {/* Mobile hamburger */}
@@ -96,18 +138,12 @@ export default function LandingNav({ hotel }: Props) {
             className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 md:hidden"
             aria-label="Toggle menu"
           >
-            <motion.span
-              animate={menuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-              className="block h-px w-6 bg-cream origin-center transition-colors"
-            />
-            <motion.span
-              animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
-              className="block h-px w-6 bg-cream"
-            />
-            <motion.span
-              animate={menuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-              className="block h-px w-6 bg-cream origin-center"
-            />
+            <motion.span animate={menuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
+              className="block h-px w-6 bg-cream origin-center transition-colors" />
+            <motion.span animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
+              className="block h-px w-6 bg-cream" />
+            <motion.span animate={menuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
+              className="block h-px w-6 bg-cream origin-center" />
           </button>
         </div>
       </motion.nav>
@@ -123,23 +159,40 @@ export default function LandingNav({ hotel }: Props) {
             className="fixed inset-x-0 top-[65px] z-40 border-b border-cream/10 bg-forest-950/97 backdrop-blur-xl md:hidden"
           >
             <div className="flex flex-col gap-1 px-6 py-6">
-              {NAV_LINKS.map((link) => (
-                <button
-                  key={link.href}
-                  type="button"
-                  onClick={() => scrollTo(link.href)}
-                  className="py-3 text-left text-base text-cream/70 transition-colors hover:text-gold-300 border-b border-cream/[0.06] last:border-0"
-                >
-                  {link.label}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => navigate('/app')}
-                className="mt-4 w-full rounded-2xl bg-gold-500 py-3 font-semibold text-forest-950"
-              >
-                Open Guest App
-              </button>
+              {/* Route tabs */}
+              {TABS.map((tab) => {
+                const active = activeTab === tab.path
+                return (
+                  <button
+                    key={tab.path}
+                    type="button"
+                    onClick={() => goTo(tab.path)}
+                    className={`py-3 text-left text-base border-b border-cream/[0.06] last:border-0 transition-colors ${
+                      active ? 'text-gold-400' : 'text-cream/70 hover:text-gold-300'
+                    }`}
+                  >
+                    {tab.label}
+                    {tab.auth && <span className="ml-2 text-[10px] text-cream/25">Sign in required</span>}
+                  </button>
+                )
+              })}
+
+              {/* Anchor links when on home */}
+              {isHome && (
+                <>
+                  <div className="my-2 h-px bg-cream/[0.06]" />
+                  {HOME_ANCHORS.map((link) => (
+                    <button
+                      key={link.href}
+                      type="button"
+                      onClick={() => scrollTo(link.href)}
+                      className="py-3 text-left text-sm text-cream/45 transition-colors hover:text-gold-300 border-b border-cream/[0.04] last:border-0"
+                    >
+                      {link.label}
+                    </button>
+                  ))}
+                </>
+              )}
             </div>
           </motion.div>
         )}
