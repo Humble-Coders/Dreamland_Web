@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { imgUrl } from '../../utils/imgUrl'
+import SEO, { SITE_URL, DEFAULT_IMAGE } from '../../components/SEO'
 
 export default function MobileGalleryScreen() {
   const { hotelId } = useParams<{ hotelId: string }>()
@@ -102,6 +103,12 @@ export default function MobileGalleryScreen() {
   /* ── Grid view ── */
   return (
     <div className="min-h-screen bg-forest-950 text-cream">
+      <SEO
+        title={`Photo Gallery${hotelName ? ` | ${hotelName}` : ''} | Dreamland Resort Karnal`}
+        description={`Browse photos of ${hotelName || 'Dreamland Resort'} — rooms, amenities and surroundings in Karnal, Haryana.`}
+        path={hotelId ? `/hotel/${hotelId}/gallery` : '/'}
+        image={photos[0] ? `${SITE_URL}${photos[0]}` : DEFAULT_IMAGE}
+      />
       {/* Top bar */}
       <div className="sticky top-0 z-10 flex items-center gap-3 border-b border-cream/[0.06] bg-forest-950/95 px-4 py-3 backdrop-blur-sm">
         <button type="button" onClick={() => navigate(-1)}

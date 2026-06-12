@@ -5,16 +5,71 @@
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#0a3322" />
-    <title>Hotel Dreamland</title>
+
+    <!-- Primary SEO -->
+    <title>Dreamland Resort Karnal | Luxury Stay & Hospitality</title>
+    <meta name="description" content="Dreamland Resort in Karnal, Haryana offers luxury rooms, fine dining and warm hospitality on GT Road. Book your stay at Hotel Dreamland today." />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://bookmydreamland.com/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Dreamland Resort Karnal" />
+    <meta property="og:title" content="Dreamland Resort Karnal | Luxury Stay & Hospitality" />
+    <meta property="og:description" content="Dreamland Resort in Karnal, Haryana offers luxury rooms, fine dining and warm hospitality on GT Road. Book your stay at Hotel Dreamland today." />
+    <meta property="og:image" content="https://bookmydreamland.com/photos/0D9A9998.jpeg" />
+    <meta property="og:url" content="https://bookmydreamland.com/" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Dreamland Resort Karnal | Luxury Stay & Hospitality" />
+    <meta name="twitter:description" content="Dreamland Resort in Karnal, Haryana offers luxury rooms, fine dining and warm hospitality on GT Road. Book your stay at Hotel Dreamland today." />
+    <meta name="twitter:image" content="https://bookmydreamland.com/photos/0D9A9998.jpeg" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Dreamland Resort",
+        "url": "https://bookmydreamland.com/",
+        "logo": "https://bookmydreamland.com/logo.png"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Dreamland Resort Karnal",
+        "url": "https://bookmydreamland.com/"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": ["Hotel", "LodgingBusiness", "LocalBusiness"],
+        "name": "Dreamland Resort",
+        "image": "https://bookmydreamland.com/photos/0D9A9998.jpeg",
+        "url": "https://bookmydreamland.com/",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "GT Road",
+          "addressLocality": "Karnal",
+          "addressRegion": "Haryana",
+          "addressCountry": "IN"
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

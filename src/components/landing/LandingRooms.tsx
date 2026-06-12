@@ -1,10 +1,11 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import SectionHeading from './ui/SectionHeading'
 import { staggerChildren, fadeUp, slideLeft } from './ui/MotionVariants'
 import Img from './ui/Img'
 import { imgUrl } from '../../utils/imgUrl'
-import type { HotelRoom } from '../../hooks/useLandingData'
+import type { HotelRoom, Hotel } from '../../hooks/useLandingData'
 
 interface Room {
   id: string
@@ -33,9 +34,10 @@ function toDisplayRoom(r: HotelRoom): Room {
 
 interface Props {
   rooms?: HotelRoom[]
+  hotel?: Hotel | null
 }
 
-export default function LandingRooms({ rooms }: Props) {
+export default function LandingRooms({ rooms, hotel }: Props) {
   const ref = useRef<HTMLElement>(null)
   const isInView = useInView(ref, { once: true, amount: 0.1 })
 
@@ -60,7 +62,7 @@ export default function LandingRooms({ rooms }: Props) {
         {displayRooms.length > 0 && (
           <div className="space-y-14 sm:space-y-20 lg:space-y-24">
             {displayRooms.map((room, index) => (
-              <RoomCard key={room.id} room={room} index={index} isInView={isInView} />
+              <RoomCard key={room.id} room={room} originalRoom={rooms![index]} hotel={hotel} index={index} isInView={isInView} />
             ))}
           </div>
         )}
@@ -69,7 +71,16 @@ export default function LandingRooms({ rooms }: Props) {
   )
 }
 
-function RoomCard({ room, index, isInView }: { room: Room; index: number; isInView: boolean }) {
+interface RoomCardProps {
+  room: Room
+  originalRoom: HotelRoom
+  hotel?: Hotel | null
+  index: number
+  isInView: boolean
+}
+
+function RoomCard({ room, originalRoom, hotel, index, isInView }: RoomCardProps) {
+  const navigate = useNavigate()
   const imageLeft = index % 2 === 0
 
   return (
@@ -83,10 +94,10 @@ function RoomCard({ room, index, isInView }: { room: Room; index: number; isInVi
     >
       {/* Image */}
       <motion.div variants={slideLeft} className="group relative overflow-hidden rounded-2xl bg-forest-900">
-        <div className="absolute top-5 left-5 z-10 rounded-full border border-gold-500/40 bg-forest-950/70 px-4 py-1.5 backdrop-blur-sm">
+        <div className="absolute top-5 left-5 z-10 rounded-full border border-gold-500/40 bg-forest-950/70 px-4 py-1.5 backdrop-blur-sm lg:top-8 lg:left-8">
           <span className="text-xs font-medium tracking-[0.25em] text-gold-400 uppercase">{room.category}</span>
         </div>
-        <div className="absolute top-5 right-5 z-10 flex flex-col items-end gap-1.5">
+        <div className="absolute top-5 right-5 z-10 flex flex-col items-end gap-1.5 lg:top-8 lg:right-8">
           {room.capacity && (
             <span className="rounded-full border border-cream/15 bg-forest-950/60 px-3 py-1 text-[11px] text-cream/70 backdrop-blur-sm">
               👥 {room.capacity}
@@ -141,15 +152,16 @@ function RoomCard({ room, index, isInView }: { room: Room; index: number; isInVi
           </motion.div>
         )}
 
-        <motion.button
-          variants={fadeUp}
-          type="button"
-          onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
-          className="group mt-2 flex w-fit items-center gap-2 rounded-full border border-gold-500/35 bg-gold-500/8 px-7 py-3 text-sm font-medium text-gold-300 transition-all hover:bg-gold-500/18 hover:border-gold-400/60"
-        >
-          Enquire about this room
-          <span className="transition-transform group-hover:translate-x-1">→</span>
-        </motion.button>
+        <motion.div variants={fadeUp} className="mt-2 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => navigate(`/room/${originalRoom.id}`, { state: { room: originalRoom, hotel } })}
+            className="group flex w-fit items-center gap-2 rounded-full border border-gold-500/35 bg-gold-500/8 px-7 py-3 text-sm font-medium text-gold-300 transition-all hover:bg-gold-500/18 hover:border-gold-400/60"
+          >
+            View Room Details
+            <span className="transition-transform group-hover:translate-x-1">→</span>
+          </button>
+        </motion.div>
       </div>
     </motion.div>
   )

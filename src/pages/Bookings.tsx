@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useLandingData } from '../hooks/useLandingData'
 import LandingNav from '../components/landing/LandingNav'
+import SEO from '../components/SEO'
 import { imgUrl } from '../utils/imgUrl'
 import { LOCAL_PHOTOS } from '../data/localImages'
 
@@ -17,6 +18,7 @@ export default function Bookings() {
 
   return (
     <div className="min-h-screen bg-forest-950 text-cream">
+      <SEO title="Bookings | Dreamland Resort Karnal" description="Manage your bookings at Dreamland Resort." path="/bookings" noindex />
       <LandingNav hotel={hotel} />
 
       <div className="flex min-h-screen">

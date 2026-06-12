@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMobileData } from '../hooks/useMobileData'
 import MobileHotelCard from '../components/MobileHotelCard'
 import MobileBottomNav from '../components/MobileBottomNav'
+import SEO from '../../components/SEO'
 
 export default function MobileHotels() {
   const { hotels, loading, error } = useMobileData()
@@ -18,6 +19,11 @@ export default function MobileHotels() {
 
   return (
     <div className="min-h-screen bg-forest-950 text-cream pb-20">
+      <SEO
+        title="Our Hotels | Dreamland Resort Karnal"
+        description="Browse hotels and rooms available at Dreamland Resort, Karnal. Find your perfect stay with luxury amenities and warm hospitality."
+        path="/hotels"
+      />
       {/* Header */}
       <div className="sticky top-0 z-10 border-b border-cream/[0.06] bg-forest-950/95 px-5 pb-4 pt-12 backdrop-blur-sm">
         <h1 className="font-display text-2xl text-cream">Hotels</h1>

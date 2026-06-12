@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useMobileHotelDetail } from '../hooks/useMobileHotelDetail'
+import SEO, { SITE_URL, DEFAULT_IMAGE } from '../../components/SEO'
 import MobileCollapsingHeader from '../components/MobileCollapsingHeader'
 import MobileHeroCarousel from '../components/MobileHeroCarousel'
 import MobileGallery from '../components/MobileGallery'
@@ -59,6 +60,13 @@ export default function MobileHotelDetail() {
 
   return (
     <div className="min-h-screen bg-forest-950 text-cream pb-24">
+      <SEO
+        title={`${hotel.name} | Dreamland Resort Karnal`}
+        description={hotel.description || `Discover ${hotel.name} in ${hotel.city ?? 'Karnal'} — explore rooms, amenities and book your stay at Dreamland Resort.`}
+        path={`/hotel/${hotel.id}`}
+        image={hotel.photos?.[0] ? `${SITE_URL}${hotel.photos[0]}` : DEFAULT_IMAGE}
+        type="hotel"
+      />
       <MobileCollapsingHeader
         hotelName={hotel.name}
         heroHeight={HERO_HEIGHT}
@@ -134,7 +142,7 @@ export default function MobileHotelDetail() {
         <Section title="Rooms">
           <div className="space-y-4">
             {rooms.map((room) => (
-              <MobileRoomCard key={room.id} room={room} waUrl={waUrl} />
+              <MobileRoomCard key={room.id} room={room} waUrl={waUrl} hotel={hotel} />
             ))}
           </div>
         </Section>

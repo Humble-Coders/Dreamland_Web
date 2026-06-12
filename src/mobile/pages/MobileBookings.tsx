@@ -1,8 +1,10 @@
 import MobileBottomNav from '../components/MobileBottomNav'
+import SEO from '../../components/SEO'
 
 export default function MobileBookings() {
   return (
     <div className="flex min-h-screen flex-col bg-forest-950 text-cream pb-20">
+      <SEO title="Bookings | Dreamland Resort Karnal" description="Manage your bookings at Dreamland Resort." path="/bookings" noindex />
       {/* Header */}
       <div className="border-b border-cream/[0.06] px-5 pb-4 pt-12">
         <h1 className="font-display text-2xl text-cream">Bookings</h1>

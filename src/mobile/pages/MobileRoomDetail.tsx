@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { getRoomById } from '../../services/landingService'
+import SEO, { SITE_URL, DEFAULT_IMAGE } from '../../components/SEO'
 import { imgUrl } from '../../utils/imgUrl'
 import type { HotelRoom, Hotel } from '../../services/landingService'
 
@@ -67,6 +68,12 @@ export default function MobileRoomDetail() {
 
   return (
     <div className="min-h-screen bg-forest-950 text-cream">
+      <SEO
+        title={`${room.name} | ${hotel?.name ?? 'Dreamland Resort Karnal'}`}
+        description={room.description || `Explore the ${room.name} room at ${hotel?.name ?? 'Dreamland Resort'} — view amenities, pricing and availability.`}
+        path={`/room/${room.id}`}
+        image={photos[0] ? `${SITE_URL}${photos[0]}` : DEFAULT_IMAGE}
+      />
 
       {/* ── Photo Carousel ── */}
       <div className="relative h-[55vw] min-h-[260px] max-h-[380px] w-full overflow-hidden bg-forest-900">

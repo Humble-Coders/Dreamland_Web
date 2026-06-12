@@ -7,6 +7,7 @@ import MobileHomeReviews from '../components/MobileHomeReviews'
 import MobileHomeGallery from '../components/MobileHomeGallery'
 import Logo from '../../components/Logo'
 import MobileBottomNav from '../components/MobileBottomNav'
+import SEO, { SITE_URL, DEFAULT_IMAGE } from '../../components/SEO'
 
 const TRUST = [
   { icon: '✦', label: 'Verified Property' },
@@ -31,6 +32,12 @@ export default function MobileHome() {
 
   return (
     <div className="min-h-screen bg-forest-950 text-cream">
+      <SEO
+        title="Dreamland Resort Karnal | Luxury Stay & Hospitality"
+        description={firstHotel?.description || 'Dreamland Resort in Karnal, Haryana offers luxury rooms, fine dining and warm hospitality on GT Road. Book your stay at Hotel Dreamland today.'}
+        path="/"
+        image={firstHotel?.photos?.[0] ? `${SITE_URL}${firstHotel.photos[0]}` : DEFAULT_IMAGE}
+      />
       {/* Sticky top nav */}
       <nav
         className={`fixed inset-x-0 top-0 z-40 flex items-center px-5 py-3 transition-all duration-300 ${

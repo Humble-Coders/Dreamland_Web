@@ -210,6 +210,16 @@ function injectRoomPhotos(rooms: HotelRoom[]): HotelRoom[] {
   }))
 }
 
+// Replace attraction media (Firebase Storage URLs that no longer resolve) with local images
+function injectAttractionPhotos(attractions: Attraction[]): Attraction[] {
+  return attractions.map((a, i) => ({ ...a, media: localPhotos(2, i * 2) }))
+}
+
+// Replace travel-activity media with local images
+function injectTravelPhotos(travelList: TravelActivity[]): TravelActivity[] {
+  return travelList.map((t, i) => ({ ...t, media: localPhotos(2, i * 2) }))
+}
+
 // ── Service ───────────────────────────────────────────────────────────────────
 
 export async function getHeaderMedia(): Promise<string[]> {
@@ -264,8 +274,8 @@ export async function getLandingData(): Promise<LandingData> {
     hotel: injectHotelPhotos(hotel),
     rooms: injectRoomPhotos(rooms),
     reviews,
-    attractions,
-    travelList,
+    attractions: injectAttractionPhotos(attractions),
+    travelList: injectTravelPhotos(travelList),
     headerMedia,
   }
 }
@@ -330,8 +340,8 @@ export async function getHotelDetailById(hotelId: string): Promise<LandingData> 
     hotel: injectHotelPhotos(hotel),
     rooms: injectRoomPhotos(rooms),
     reviews,
-    attractions,
-    travelList,
+    attractions: injectAttractionPhotos(attractions),
+    travelList: injectTravelPhotos(travelList),
     headerMedia,
   }
 }

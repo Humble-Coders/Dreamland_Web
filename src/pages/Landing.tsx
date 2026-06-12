@@ -1,4 +1,5 @@
 import { useLandingData } from '../hooks/useLandingData'
+import SEO, { SITE_URL, DEFAULT_IMAGE } from '../components/SEO'
 import CursorGlow from '../components/landing/CursorGlow'
 import LandingNav from '../components/landing/LandingNav'
 import LandingHero from '../components/landing/LandingHero'
@@ -7,7 +8,6 @@ import LandingRooms from '../components/landing/LandingRooms'
 import LandingWhyChoose from '../components/landing/LandingWhyChoose'
 import LandingTestimonials from '../components/landing/LandingTestimonials'
 import LandingGallery from '../components/landing/LandingGallery'
-import LandingAmenities from '../components/landing/LandingAmenities'
 import LandingLocation from '../components/landing/LandingLocation'
 import LandingContact from '../components/landing/LandingContact'
 import LandingFooter from '../components/landing/LandingFooter'
@@ -17,15 +17,38 @@ export default function Landing() {
 
   return (
     <div className="min-h-full bg-forest-950 text-cream">
+      <SEO
+        title="Dreamland Resort Karnal | Luxury Stay & Hospitality"
+        description={hotel?.description || 'Dreamland Resort in Karnal, Haryana offers luxury rooms, fine dining and warm hospitality on GT Road. Book your stay at Hotel Dreamland today.'}
+        path="/"
+        image={hotel?.photos?.[0] ? `${SITE_URL}${hotel.photos[0]}` : DEFAULT_IMAGE}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': ['Hotel', 'LodgingBusiness', 'LocalBusiness'],
+          name: hotel?.name ?? 'Dreamland Resort',
+          description: hotel?.description,
+          image: hotel?.photos?.[0] ? `${SITE_URL}${hotel.photos[0]}` : DEFAULT_IMAGE,
+          url: SITE_URL,
+          telephone: hotel?.contactPhone,
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: hotel?.address || 'GT Road',
+            addressLocality: hotel?.city || 'Karnal',
+            addressRegion: 'Haryana',
+            addressCountry: 'IN',
+          },
+          ...(hotel?.starRating ? { starRating: { '@type': 'Rating', ratingValue: hotel.starRating } } : {}),
+          ...(hotel?.averageRating ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: hotel.averageRating, reviewCount: hotel.totalReviews ?? 1 } } : {}),
+        }}
+      />
       <CursorGlow />
       <LandingNav hotel={hotel} />
-      <LandingHero heroImages={headerMedia} hotel={hotel} />
+      <LandingHero heroImages={headerMedia} hotel={hotel} rooms={rooms} />
       <LandingAbout hotel={hotel} />
-      <LandingRooms rooms={rooms} />
+      <LandingRooms rooms={rooms} hotel={hotel} />
       <LandingWhyChoose />
       <LandingTestimonials reviews={reviews} />
       <LandingGallery photos={hotel?.photos} />
-      {/* <LandingAmenities hotel={hotel} /> */}
       <LandingLocation hotel={hotel} attractions={attractions} />
       <LandingContact hotel={hotel} />
       <LandingFooter hotel={hotel} />

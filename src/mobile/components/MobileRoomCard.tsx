@@ -1,9 +1,11 @@
+import { useNavigate } from 'react-router-dom'
 import { imgUrl } from '../../utils/imgUrl'
-import type { HotelRoom } from '../../services/landingService'
+import type { HotelRoom, Hotel } from '../../services/landingService'
 
 interface Props {
   room: HotelRoom
   waUrl?: string | null
+  hotel?: Hotel | null
 }
 
 interface Spec {
@@ -22,18 +24,26 @@ function buildSpecs(room: HotelRoom): Spec[] {
   ].filter((s): s is Spec => s !== null)
 }
 
-export default function MobileRoomCard({ room, waUrl }: Props) {
+export default function MobileRoomCard({ room, waUrl, hotel }: Props) {
+  const navigate = useNavigate()
   const specs = buildSpecs(room)
   const highlights = room.amenities?.slice(0, 2) ?? []
   const image = room.media?.[0]
 
-  const handleEnquire = () => {
+  const handleEnquire = (e: React.MouseEvent) => {
+    e.stopPropagation()
     if (waUrl) window.open(waUrl, '_blank', 'noopener,noreferrer')
     else document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-cream/[0.06] bg-forest-900/60">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => navigate(`/room/${room.id}`, { state: { room, hotel } })}
+      onKeyDown={(e) => e.key === 'Enter' && navigate(`/room/${room.id}`, { state: { room, hotel } })}
+      className="overflow-hidden rounded-2xl border border-cream/[0.06] bg-forest-900/60 cursor-pointer"
+    >
       {/* Room image */}
       {image && (
         <div className="relative h-40 w-full overflow-hidden bg-forest-900">

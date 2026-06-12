@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
 import { useLandingData } from '../hooks/useLandingData'
+import SEO from '../components/SEO'
 import LandingNav from '../components/landing/LandingNav'
 import LandingFooter from '../components/landing/LandingFooter'
 import { imgUrl } from '../utils/imgUrl'
@@ -167,6 +168,11 @@ export default function Hotels() {
 
   return (
     <div className="min-h-screen bg-forest-950 text-cream">
+      <SEO
+        title="Our Hotels | Dreamland Resort Karnal"
+        description="Browse hotels and rooms available at Dreamland Resort, Karnal. Find your perfect stay with luxury amenities and warm hospitality."
+        path="/hotels"
+      />
       <LandingNav hotel={firstHotel} />
 
       {/* Page header */}
