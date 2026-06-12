@@ -1,4 +1,5 @@
 import { useLandingData } from '../hooks/useLandingData'
+import { HEADER_PHOTOS } from '../data/localImages'
 import SEO, { SITE_URL, DEFAULT_IMAGE } from '../components/SEO'
 import CursorGlow from '../components/landing/CursorGlow'
 import LandingNav from '../components/landing/LandingNav'
@@ -13,7 +14,7 @@ import LandingContact from '../components/landing/LandingContact'
 import LandingFooter from '../components/landing/LandingFooter'
 
 export default function Landing() {
-  const { hotel, rooms, reviews, attractions, travelList, headerMedia } = useLandingData()
+  const { hotel, rooms, reviews, attractions, travelList } = useLandingData()
 
   return (
     <div className="min-h-full bg-forest-950 text-cream">
@@ -43,7 +44,8 @@ export default function Landing() {
       />
       <CursorGlow />
       <LandingNav hotel={hotel} />
-      <LandingHero heroImages={headerMedia} hotel={hotel} rooms={rooms} />
+      {/* Hero images are static local assets — rendered immediately, no Firestore wait */}
+      <LandingHero heroImages={HEADER_PHOTOS} hotel={hotel} rooms={rooms} />
       <LandingAbout hotel={hotel} />
       <LandingRooms rooms={rooms} hotel={hotel} />
       <LandingWhyChoose />

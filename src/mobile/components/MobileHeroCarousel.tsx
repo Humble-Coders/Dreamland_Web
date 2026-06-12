@@ -18,22 +18,29 @@ export default function MobileHeroCarousel({ images, title, subtitle }: Props) {
 
   return (
     <div className="relative h-[65vh] min-h-[400px] w-full overflow-hidden bg-forest-950">
-      {/* Crossfade images — match Android Crossfade(tween(1200ms)) */}
+      {/* Crossfade images — match Android Crossfade(tween(1200ms)).
+          Only the current slide and the next one (preloaded for the
+          upcoming transition) are mounted, so hidden slides never
+          download on initial load. */}
       {images.length > 0 ? (
-        images.map((url, i) => (
-          <div
-            key={url}
-            className={`absolute inset-0 transition-opacity duration-[1200ms] ${i === current ? 'opacity-100' : 'opacity-0'}`}
-          >
-            <img
-              src={imgUrl(url, 1080)}
-              alt=""
-              className="h-full w-full object-cover"
-              loading={i === 0 ? 'eager' : 'lazy'}
-              fetchPriority={i === 0 ? 'high' : 'auto'}
-            />
-          </div>
-        ))
+        images.map((url, i) => {
+          const next = (current + 1) % images.length
+          if (i !== current && i !== next) return null
+          return (
+            <div
+              key={url}
+              className={`absolute inset-0 transition-opacity duration-[1200ms] ${i === current ? 'opacity-100' : 'opacity-0'}`}
+            >
+              <img
+                src={imgUrl(url, 1080)}
+                alt=""
+                className="h-full w-full object-cover"
+                loading={i === current ? 'eager' : 'lazy'}
+                fetchPriority={i === current ? 'high' : 'auto'}
+              />
+            </div>
+          )
+        })
       ) : (
         <div className="absolute inset-0 bg-gradient-to-b from-forest-800 via-forest-900 to-forest-950" />
       )}

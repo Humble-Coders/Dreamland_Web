@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useMobileData } from '../hooks/useMobileData'
+import { HEADER_PHOTOS } from '../../data/localImages'
 import MobileHeroCarousel from '../components/MobileHeroCarousel'
 import MobileHotelCard from '../components/MobileHotelCard'
 import MobileHomeSuites from '../components/MobileHomeSuites'
@@ -17,7 +18,7 @@ const TRUST = [
 ]
 
 export default function MobileHome() {
-  const { hotels, headerMedia, rooms, reviews, galleryPhotos, loading, error } = useMobileData()
+  const { hotels, rooms, reviews, galleryPhotos, loading, error } = useMobileData()
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -60,9 +61,9 @@ export default function MobileHome() {
         </button>
       </nav>
 
-      {/* Hero carousel */}
+      {/* Hero carousel — static local images, rendered immediately (no Firestore wait) */}
       <MobileHeroCarousel
-        images={headerMedia}
+        images={HEADER_PHOTOS}
         title={'Your Next Stay\nAwaits'}
         subtitle="Experience curated luxury"
       />

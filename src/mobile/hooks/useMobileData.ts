@@ -4,7 +4,6 @@ import type { Hotel, HotelRoom, HotelReview } from '../../services/landingServic
 
 interface MobileHomeState {
   hotels: Hotel[]
-  headerMedia: string[]
   rooms: HotelRoom[]
   reviews: HotelReview[]
   galleryPhotos: string[]
@@ -14,7 +13,6 @@ interface MobileHomeState {
 
 const INITIAL: MobileHomeState = {
   hotels: [],
-  headerMedia: [],
   rooms: [],
   reviews: [],
   galleryPhotos: [],
@@ -32,7 +30,6 @@ export function useMobileData(): MobileHomeState {
         if (!cancelled) {
           setState({
             hotels,
-            headerMedia: data.headerMedia,
             rooms: data.rooms,
             reviews: data.reviews,
             galleryPhotos: data.hotel?.photos ?? [],
