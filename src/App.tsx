@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
 import type { User } from 'firebase/auth'
-import { auth } from './firebase'
+import { auth } from './firebaseAuth'
 import { getRoomInstanceId } from './utils'
 import Layout from './components/Layout'
 import Card from './components/Card'

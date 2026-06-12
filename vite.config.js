@@ -13,9 +13,14 @@ export default defineConfig({
         // dependency is resolved through.
         manualChunks(id) {
           if (!id.includes('node_modules')) return undefined
-          if (id.includes('firebase')) return 'vendor-firebase'
-          if (id.includes('framer-motion') || id.includes('motion-dom') || id.includes('motion-utils')) return 'vendor-motion'
-          if (id.includes('react')) return 'vendor-react'
+          const path = id.replace(/\\/g, '/')
+          // Auth and Functions are only used by the /app check-in flow — keep
+          // them out of the chunk the homepage (Firestore-only) depends on.
+          if (path.includes('@firebase/auth') || path.includes('firebase/auth')) return 'vendor-firebase-auth'
+          if (path.includes('@firebase/functions') || path.includes('firebase/functions')) return 'vendor-firebase-functions'
+          if (path.includes('firebase')) return 'vendor-firebase'
+          if (path.includes('framer-motion') || path.includes('motion-dom') || path.includes('motion-utils')) return 'vendor-motion'
+          if (path.includes('react')) return 'vendor-react'
           return undefined
         },
       },
