@@ -85,7 +85,7 @@ export default function RoomDetail() {
       />
       <LandingNav hotel={hotel} />
 
-      <div className="mx-auto max-w-7xl px-6 pb-24 pt-28 lg:px-10 lg:pt-32">
+      <main className="mx-auto max-w-7xl px-6 pb-24 pt-28 lg:px-10 lg:pt-32">
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -279,7 +279,7 @@ export default function RoomDetail() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
 
       <LandingFooter hotel={hotel} />
     </div>

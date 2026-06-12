@@ -44,15 +44,17 @@ export default function Landing() {
       />
       <CursorGlow />
       <LandingNav hotel={hotel} />
-      {/* Hero images are static local assets — rendered immediately, no Firestore wait */}
-      <LandingHero heroImages={HEADER_PHOTOS} hotel={hotel} rooms={rooms} />
-      <LandingAbout hotel={hotel} />
-      <LandingRooms rooms={rooms} hotel={hotel} />
-      <LandingWhyChoose />
-      <LandingTestimonials reviews={reviews} />
-      <LandingGallery photos={hotel?.photos} />
-      <LandingLocation hotel={hotel} attractions={attractions} />
-      <LandingContact hotel={hotel} />
+      <main>
+        {/* Hero images are static local assets — rendered immediately, no Firestore wait */}
+        <LandingHero heroImages={HEADER_PHOTOS} hotel={hotel} rooms={rooms} />
+        <LandingAbout hotel={hotel} />
+        <LandingRooms rooms={rooms} hotel={hotel} />
+        <LandingWhyChoose />
+        <LandingTestimonials reviews={reviews} />
+        <LandingGallery photos={hotel?.photos} />
+        <LandingLocation hotel={hotel} attractions={attractions} />
+        <LandingContact hotel={hotel} />
+      </main>
       <LandingFooter hotel={hotel} />
     </div>
   )

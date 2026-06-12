@@ -21,7 +21,7 @@ export default function Bookings() {
       <SEO title="Bookings | Dreamland Resort Karnal" description="Manage your bookings at Dreamland Resort." path="/bookings" noindex />
       <LandingNav hotel={hotel} />
 
-      <div className="flex min-h-screen">
+      <main className="flex min-h-screen">
         {/* ── Left panel — atmospheric image ── */}
         <div className="relative hidden w-1/2 lg:block">
           <img
@@ -98,7 +98,7 @@ export default function Bookings() {
             </div>
           </motion.div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

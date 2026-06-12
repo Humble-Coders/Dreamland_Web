@@ -23,7 +23,7 @@ export default function Profile() {
       <SEO title="Profile | Dreamland Resort Karnal" description="Manage your account at Dreamland Resort." path="/profile" noindex />
       <LandingNav hotel={hotel} />
 
-      <div className="flex min-h-screen">
+      <main className="flex min-h-screen">
         {/* ── Right panel — image (flipped vs Bookings) ── */}
         <div className="flex flex-1 flex-col items-center justify-center px-8 py-32 lg:px-16">
           <motion.div
@@ -99,7 +99,7 @@ export default function Profile() {
             </p>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

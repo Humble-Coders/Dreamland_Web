@@ -110,8 +110,17 @@ function DetailHero({ hotel }: { hotel: Hotel }) {
               type="button"
               aria-label={`Image ${i + 1}`}
               onClick={() => setCurrent(i)}
-              className={`h-1 rounded-full transition-all duration-300 ${i === current ? 'w-6 bg-gold-400' : 'w-1.5 bg-cream/30'}`}
-            />
+              className="relative h-1 w-6 rounded-full"
+            >
+              {/* Inactive track */}
+              <span className="absolute inset-0 rounded-full bg-cream/30" />
+              {/* Active fill — animates via transform only (composited) */}
+              <span
+                className={`absolute inset-0 origin-left rounded-full bg-gold-400 transition-transform duration-300 ${
+                  i === current ? 'scale-x-100' : 'scale-x-[0.25]'
+                }`}
+              />
+            </button>
           ))}
         </div>
       )}
@@ -248,15 +257,17 @@ export default function HotelDetail() {
         type="hotel"
       />
       <LandingNav hotel={hotel} />
-      <DetailHero hotel={hotel} />
-      <QuickInfoBar hotel={hotel} roomCount={rooms?.length ?? 0} />
-      <LandingAbout hotel={hotel} />
-      <LandingRooms rooms={rooms} hotel={hotel} />
-      {(hotel.highlights?.length ?? 0) > 0 && <LandingAmenities hotel={hotel} />}
-      <LandingGallery photos={hotel.photos} />
-      <LandingTestimonials reviews={reviews} />
-      <LandingLocation hotel={hotel} attractions={attractions} />
-      <ContactStrip hotel={hotel} />
+      <main>
+        <DetailHero hotel={hotel} />
+        <QuickInfoBar hotel={hotel} roomCount={rooms?.length ?? 0} />
+        <LandingAbout hotel={hotel} />
+        <LandingRooms rooms={rooms} hotel={hotel} />
+        {(hotel.highlights?.length ?? 0) > 0 && <LandingAmenities hotel={hotel} />}
+        <LandingGallery photos={hotel.photos} />
+        <LandingTestimonials reviews={reviews} />
+        <LandingLocation hotel={hotel} attractions={attractions} />
+        <ContactStrip hotel={hotel} />
+      </main>
       <LandingFooter hotel={hotel} />
     </div>
   )

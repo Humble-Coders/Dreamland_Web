@@ -5,6 +5,7 @@ export default function MobileProfile() {
   return (
     <div className="flex min-h-screen flex-col bg-forest-950 text-cream pb-20">
       <SEO title="Profile | Dreamland Resort Karnal" description="Manage your account at Dreamland Resort." path="/profile" noindex />
+      <main className="flex flex-1 flex-col">
       {/* Header */}
       <div className="border-b border-cream/[0.06] px-5 pb-4 pt-12">
         <h1 className="font-display text-2xl text-cream">Profile</h1>
@@ -63,6 +64,7 @@ export default function MobileProfile() {
 
         <p className="text-xs text-cream/20">Authentication coming soon</p>
       </div>
+      </main>
 
       <MobileBottomNav />
     </div>

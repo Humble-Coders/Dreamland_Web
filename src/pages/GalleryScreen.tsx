@@ -48,6 +48,7 @@ export default function GalleryScreen() {
       />
       <LandingNav hotel={hotel} />
 
+      <main>
       <div className="mx-auto max-w-7xl px-6 pt-28 lg:px-10 lg:pt-32">
         <button
           type="button"
@@ -74,6 +75,7 @@ export default function GalleryScreen() {
       ) : (
         <LandingGallery photos={photos} />
       )}
+      </main>
 
       <LandingFooter hotel={hotel} />
     </div>

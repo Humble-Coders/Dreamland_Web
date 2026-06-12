@@ -175,6 +175,7 @@ export default function Hotels() {
       />
       <LandingNav hotel={firstHotel} />
 
+      <main>
       {/* Page header */}
       <div className="pt-36 pb-12 px-6 lg:px-10">
         <div className="mx-auto max-w-7xl">
@@ -250,6 +251,7 @@ export default function Hotels() {
           )}
         </div>
       </div>
+      </main>
 
       <LandingFooter hotel={firstHotel} />
     </div>

@@ -24,6 +24,7 @@ export default function MobileHotels() {
         description="Browse hotels and rooms available at Dreamland Resort, Karnal. Find your perfect stay with luxury amenities and warm hospitality."
         path="/hotels"
       />
+      <main>
       {/* Header */}
       <div className="sticky top-0 z-10 border-b border-cream/[0.06] bg-forest-950/95 px-5 pb-4 pt-12 backdrop-blur-sm">
         <h1 className="font-display text-2xl text-cream">Hotels</h1>
@@ -94,6 +95,7 @@ export default function MobileHotels() {
           </>
         )}
       </div>
+      </main>
 
       <MobileBottomNav />
     </div>

@@ -91,8 +91,17 @@ export default function MobileGalleryScreen() {
         {photos.length > 1 && (
           <div className="flex items-center justify-center gap-1.5 py-4 shrink-0 overflow-x-auto px-4">
             {photos.map((_, i) => (
-              <button key={i} type="button" onClick={() => setActive(i)}
-                className={`shrink-0 rounded-full transition-all duration-300 ${i === active ? 'h-1.5 w-6 bg-gold-400' : 'h-1.5 w-1.5 bg-cream/30'}`} />
+              <button key={i} type="button" onClick={() => setActive(i)} aria-label={`Photo ${i + 1}`}
+                className="relative h-1.5 w-6 shrink-0 rounded-full">
+                {/* Inactive track */}
+                <span className="absolute inset-0 rounded-full bg-cream/30" />
+                {/* Active fill — animates via transform only (composited) */}
+                <span
+                  className={`absolute inset-0 origin-left rounded-full bg-gold-400 transition-transform duration-300 ${
+                    i === active ? 'scale-x-100' : 'scale-x-[0.25]'
+                  }`}
+                />
+              </button>
             ))}
           </div>
         )}
@@ -126,6 +135,7 @@ export default function MobileGalleryScreen() {
         </div>
       </div>
 
+      <main>
       {/* Masonry-style 2-col grid */}
       <div className="grid grid-cols-2 gap-0.5 p-0.5">
         {photos.map((url, i) => (
@@ -149,6 +159,7 @@ export default function MobileGalleryScreen() {
       </div>
 
       <div className="h-8" />
+      </main>
     </div>
   )
 }

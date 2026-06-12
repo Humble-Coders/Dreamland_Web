@@ -5,6 +5,7 @@ export default function MobileBookings() {
   return (
     <div className="flex min-h-screen flex-col bg-forest-950 text-cream pb-20">
       <SEO title="Bookings | Dreamland Resort Karnal" description="Manage your bookings at Dreamland Resort." path="/bookings" noindex />
+      <main className="flex flex-1 flex-col">
       {/* Header */}
       <div className="border-b border-cream/[0.06] px-5 pb-4 pt-12">
         <h1 className="font-display text-2xl text-cream">Bookings</h1>
@@ -48,6 +49,7 @@ export default function MobileBookings() {
 
         <p className="text-xs text-cream/20">Authentication coming soon</p>
       </div>
+      </main>
 
       <MobileBottomNav />
     </div>

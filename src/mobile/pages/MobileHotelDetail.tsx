@@ -73,6 +73,7 @@ export default function MobileHotelDetail() {
         onBack={() => navigate(-1)}
       />
 
+      <main>
       {/* Hero photos carousel — 320px equivalent */}
       <div className="relative overflow-hidden" style={{ height: HERO_HEIGHT }}>
         <MobileHeroCarousel images={heroPhotos} />
@@ -180,6 +181,7 @@ export default function MobileHotelDetail() {
           <MobileContact hotel={hotel} />
         </Section>
       )}
+      </main>
 
       {/* Sticky bottom CTA bar */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-cream/[0.08] bg-forest-950/95 px-5 py-4 backdrop-blur-sm">

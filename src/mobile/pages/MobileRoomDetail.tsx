@@ -75,6 +75,7 @@ export default function MobileRoomDetail() {
         image={photos[0] ? `${SITE_URL}${photos[0]}` : DEFAULT_IMAGE}
       />
 
+      <main>
       {/* ── Photo Carousel ── */}
       <div className="relative h-[55vw] min-h-[260px] max-h-[380px] w-full overflow-hidden bg-forest-900">
         {photos.length > 0 ? (
@@ -95,8 +96,17 @@ export default function MobileRoomDetail() {
             {photos.length > 1 && (
               <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5">
                 {photos.map((_, i) => (
-                  <button key={i} type="button" onClick={() => setPhotoIdx(i)}
-                    className={`h-1 rounded-full transition-all duration-300 ${i === photoIdx ? 'w-6 bg-gold-400' : 'w-1.5 bg-cream/30'}`} />
+                  <button key={i} type="button" onClick={() => setPhotoIdx(i)} aria-label={`Photo ${i + 1}`}
+                    className="relative h-1 w-6 rounded-full">
+                    {/* Inactive track */}
+                    <span className="absolute inset-0 rounded-full bg-cream/30" />
+                    {/* Active fill — animates via transform only (composited) */}
+                    <span
+                      className={`absolute inset-0 origin-left rounded-full bg-gold-400 transition-transform duration-300 ${
+                        i === photoIdx ? 'scale-x-100' : 'scale-x-[0.25]'
+                      }`}
+                    />
+                  </button>
                 ))}
               </div>
             )}
@@ -259,6 +269,7 @@ export default function MobileRoomDetail() {
           </p>
         )}
       </div>
+      </main>
 
       {/* ── Sticky CTA ── */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-cream/[0.08] bg-forest-950/95 px-5 py-4 backdrop-blur-sm">

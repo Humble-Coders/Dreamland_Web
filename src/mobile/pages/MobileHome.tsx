@@ -40,13 +40,15 @@ export default function MobileHome() {
         image={firstHotel?.photos?.[0] ? `${SITE_URL}${firstHotel.photos[0]}` : DEFAULT_IMAGE}
       />
       {/* Sticky top nav */}
-      <nav
-        className={`fixed inset-x-0 top-0 z-40 flex items-center px-5 py-3 transition-all duration-300 ${
-          scrolled
-            ? 'border-b border-cream/[0.07] bg-forest-950/80 backdrop-blur-md'
-            : 'bg-transparent'
-        }`}
-      >
+      <nav className="fixed inset-x-0 top-0 z-40 flex items-center px-5 py-3">
+        {/* Background layer animates via opacity only (composited) instead of
+            toggling backdrop-filter/background-color/border directly. */}
+        <div
+          aria-hidden
+          className={`absolute inset-0 -z-10 border-b border-cream/[0.07] bg-forest-950/80 backdrop-blur-md transition-opacity duration-300 ${
+            scrolled ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
         <button
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -61,6 +63,7 @@ export default function MobileHome() {
         </button>
       </nav>
 
+      <main>
       {/* Hero carousel — static local images, rendered immediately (no Firestore wait) */}
       <MobileHeroCarousel
         images={HEADER_PHOTOS}
@@ -148,6 +151,7 @@ export default function MobileHome() {
 
       {/* Bottom padding — clears bottom nav + a little breathing room */}
       <div className="h-24" />
+      </main>
 
       {/* Floating WhatsApp CTA — sits above the bottom nav */}
       {waUrl && (

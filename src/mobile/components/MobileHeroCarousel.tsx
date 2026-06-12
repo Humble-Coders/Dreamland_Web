@@ -93,10 +93,17 @@ export default function MobileHeroCarousel({ images, title, subtitle }: Props) {
               type="button"
               aria-label={`Image ${i + 1}`}
               onClick={() => setCurrent(i)}
-              className={`h-1 rounded-full transition-all duration-300 ${
-                i === current ? 'w-5 bg-gold-400' : 'w-1 bg-cream/30'
-              }`}
-            />
+              className="relative h-1 w-5 rounded-full"
+            >
+              {/* Inactive track */}
+              <span className="absolute inset-0 rounded-full bg-cream/30" />
+              {/* Active fill — animates via transform only (composited) */}
+              <span
+                className={`absolute inset-0 origin-left rounded-full bg-gold-400 transition-transform duration-300 ${
+                  i === current ? 'scale-x-100' : 'scale-x-[0.2]'
+                }`}
+              />
+            </button>
           ))}
         </div>
       )}
