@@ -3,7 +3,7 @@ import { motion, AnimatePresence, useInView } from 'framer-motion'
 import SectionHeading from './ui/SectionHeading'
 import { staggerChildren, scaleIn, fadeIn } from './ui/MotionVariants'
 import Img from './ui/Img'
-import { imgUrl } from '../../utils/imgUrl'
+import { imgUrl, imgSrcSet } from '../../utils/imgUrl'
 import { LOCAL_PHOTOS } from '../../data/localImages'
 
 interface GalleryItem {
@@ -106,6 +106,8 @@ export default function LandingGallery({ photos }: Props) {
               >
                 <Img
                   src={imgUrl(item.src, 600)}
+                  srcSet={imgSrcSet(item.src, [400, 600, 1080])}
+                  sizes="(min-width: 768px) 25vw, 50vw"
                   alt={item.label}
                   className="h-full min-h-32 w-full object-cover transition-transform duration-700 group-hover:scale-105 sm:min-h-44"
                   loading="lazy"
@@ -155,7 +157,7 @@ export default function LandingGallery({ photos }: Props) {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={gallery[lightboxIndex].src}
+                src={imgUrl(gallery[lightboxIndex].src, 1600)}
                 alt={gallery[lightboxIndex].label}
                 className="max-h-[80vh] max-w-[85vw] rounded-xl object-contain shadow-[0_32px_80px_rgba(0,0,0,0.8)]"
               />

@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { imgUrl } from '../../utils/imgUrl'
+import { imgUrl, imgSrcSet } from '../../utils/imgUrl'
 import type { HotelRoom, Hotel } from '../../services/landingService'
 
 interface Props {
@@ -65,7 +65,14 @@ export default function MobileHomeSuites({ rooms, hotel }: Props) {
               {/* Photo */}
               <div className="relative h-48 w-full overflow-hidden bg-forest-900">
                 {thumb ? (
-                  <img src={imgUrl(thumb, 600)} alt={room.name} className="h-full w-full object-cover" loading="lazy" />
+                  <img
+                    src={imgUrl(thumb, 600)}
+                    srcSet={imgSrcSet(thumb, [400, 600])}
+                    sizes="(min-width: 385px) 300px, 78vw"
+                    alt={room.name}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
                 ) : (
                   <div className="flex h-full items-center justify-center text-4xl opacity-10">🛏</div>
                 )}

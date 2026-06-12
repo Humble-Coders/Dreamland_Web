@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { imgUrl } from '../../utils/imgUrl'
+import { imgUrl, imgSrcSet } from '../../utils/imgUrl'
 import { hotelBadge } from '../utils'
 import type { Hotel } from '../../services/landingService'
 
@@ -24,6 +24,8 @@ export default function MobileHotelCard({ hotel }: Props) {
         {hotel.photos?.[0] ? (
           <img
             src={imgUrl(hotel.photos[0], 700)}
+            srcSet={imgSrcSet(hotel.photos[0], [600, 1080])}
+            sizes="90vw"
             alt={hotel.name}
             className="h-full w-full object-cover transition-transform duration-500"
             loading="lazy"

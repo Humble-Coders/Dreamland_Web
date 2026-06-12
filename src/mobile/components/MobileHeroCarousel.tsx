@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { imgUrl } from '../../utils/imgUrl'
+import { imgUrl, imgSrcSet } from '../../utils/imgUrl'
 
 interface Props {
   images: string[]
@@ -33,6 +33,8 @@ export default function MobileHeroCarousel({ images, title, subtitle }: Props) {
             >
               <img
                 src={imgUrl(url, 1080)}
+                srcSet={imgSrcSet(url)}
+                sizes="100vw"
                 alt=""
                 className="h-full w-full object-cover"
                 loading={i === current ? 'eager' : 'lazy'}

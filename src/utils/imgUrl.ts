@@ -10,11 +10,31 @@
 
 const CLOUD_NAME = (import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string | undefined) ?? ''
 
+// Widths that scripts/generate-image-variants.mjs pre-renders for every
+// /photos/*.avif|jpeg source as "<name>-<width>.avif".
+const LOCAL_WIDTHS = [400, 600, 1080, 1600] as const
+
+// Picks the smallest pre-generated local variant that is >= the requested
+// width, falling back to the largest available variant.
+function localVariant(src: string, width?: number): string {
+  if (!width) return src
+  const target = LOCAL_WIDTHS.find((w) => w >= width) ?? LOCAL_WIDTHS[LOCAL_WIDTHS.length - 1]
+  return src.replace(/\.\w+$/, `-${target}.avif`)
+}
+
 export function imgUrl(src: string | undefined | null, width?: number): string {
   if (!src) return ''
-  // Local public-folder paths — already optimised (avif/jpeg), skip Cloudinary
+  // Local public-folder paths — serve a pre-generated responsive AVIF variant
+  if (src.startsWith('/photos/')) return localVariant(src, width)
   if (src.startsWith('/')) return src
   if (!CLOUD_NAME) return src
   const transforms = ['f_auto', 'q_auto', ...(width ? [`w_${width},c_limit`] : [])].join(',')
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/fetch/${transforms}/${encodeURIComponent(src)}`
+}
+
+// Builds a srcset string from pre-generated local variants. Returns '' for
+// non-local (Cloudinary/remote) sources, where srcset isn't applicable.
+export function imgSrcSet(src: string | undefined | null, widths: readonly number[] = LOCAL_WIDTHS): string {
+  if (!src || !src.startsWith('/photos/')) return ''
+  return widths.map((w) => `${localVariant(src, w)} ${w}w`).join(', ')
 }

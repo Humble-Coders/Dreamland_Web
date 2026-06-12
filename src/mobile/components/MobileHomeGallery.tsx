@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { imgUrl } from '../../utils/imgUrl'
+import { imgUrl, imgSrcSet } from '../../utils/imgUrl'
 
 interface Props {
   photos: string[]
@@ -54,6 +54,8 @@ export default function MobileHomeGallery({ photos, hotelId, hotelName, previewC
             >
               <img
                 src={imgUrl(url, 400)}
+                srcSet={imgSrcSet(url, [400, 600])}
+                sizes="33vw"
                 alt=""
                 className="h-full w-full object-cover"
                 loading={i < 3 ? 'eager' : 'lazy'}

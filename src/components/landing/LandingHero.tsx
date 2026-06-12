@@ -1,7 +1,7 @@
 import { staggerChildren, fadeIn, fadeUp, slideRight } from './ui/MotionVariants'
 import { motion } from 'framer-motion'
 import Img from './ui/Img'
-import { imgUrl } from '../../utils/imgUrl'
+import { imgUrl, imgSrcSet } from '../../utils/imgUrl'
 import type { Hotel, HotelRoom } from '../../hooks/useLandingData'
 
 interface Props {
@@ -116,6 +116,8 @@ export default function LandingHero({ heroImages, hotel, rooms }: Props) {
             {mainImage && (
               <Img
                 src={imgUrl(mainImage, 1200)}
+                srcSet={imgSrcSet(mainImage)}
+                sizes="(min-width: 1024px) 50vw, 100vw"
                 alt={hotel?.name ?? ''}
                 className="h-full w-full object-cover"
                 loading="eager"
@@ -129,6 +131,8 @@ export default function LandingHero({ heroImages, hotel, rooms }: Props) {
             <div className="absolute -bottom-8 -left-8 hidden aspect-[4/3] w-2/5 overflow-hidden rounded-2xl border-4 border-forest-950 shadow-[0_20px_50px_rgba(0,0,0,0.45)] sm:block">
               <Img
                 src={imgUrl(accentImage, 600)}
+                srcSet={imgSrcSet(accentImage, [400, 600])}
+                sizes="40vw"
                 alt=""
                 className="h-full w-full object-cover"
                 loading="lazy"
