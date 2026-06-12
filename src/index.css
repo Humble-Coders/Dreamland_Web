@@ -1,5 +1,23 @@
 @import "tailwindcss";
 
+/* Self-hosted fonts (replaces the Google Fonts stylesheet) — single
+   variable-font files, instanced per weight via the `wght` axis. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/inter-var.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url("/fonts/cormorant-garamond-var.woff2") format("woff2");
+}
+
 @theme {
   /* Deep forest greens — drawn from the Hotel Dreamland logo backdrop */
   --color-forest-950: #052017;
