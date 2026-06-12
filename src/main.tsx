@@ -1,31 +1,36 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, lazy, Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
-import App from './App'
-import Landing from './pages/Landing'
-import Hotels from './pages/Hotels'
-import Bookings from './pages/Bookings'
-import Profile from './pages/Profile'
-import HotelDetail from './pages/HotelDetail'
-import RoomDetail from './pages/RoomDetail'
-import GalleryScreen from './pages/GalleryScreen'
-import MobileHome from './mobile/pages/MobileHome'
-import MobileHotelDetail from './mobile/pages/MobileHotelDetail'
-import MobileRoomDetail from './mobile/pages/MobileRoomDetail'
-import MobileGalleryScreen from './mobile/pages/MobileGalleryScreen'
-import MobileHotels from './mobile/pages/MobileHotels'
-import MobileBookings from './mobile/pages/MobileBookings'
-import MobileProfile from './mobile/pages/MobileProfile'
 import './index.css'
 
 const isMobile = () => window.innerWidth < 1024
 
-function R(Desktop: React.ComponentType, Mobile: React.ComponentType) {
+type LazyImport = () => Promise<{ default: React.ComponentType }>
+
+// Full-screen fallback shown while a route chunk is loading.
+function PageFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-forest-950">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-forest-700 border-t-gold-400" />
+    </div>
+  )
+}
+
+// Builds a route element that lazily loads ONLY the Desktop or Mobile module
+// for the current viewport — the other half is never downloaded.
+function R(loadDesktop: LazyImport, loadMobile: LazyImport) {
   return function ResponsiveWrapper() {
     const [mobile] = useState(isMobile)
-    return mobile ? <Mobile /> : <Desktop />
+    const [Comp] = useState(() => lazy(mobile ? loadMobile : loadDesktop))
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <Comp />
+      </Suspense>
+    )
   }
 }
+
+const LazyApp = lazy(() => import('./App'))
 
 // Reset scroll position to top whenever the route changes
 function ScrollToTop() {
@@ -36,13 +41,34 @@ function ScrollToTop() {
   return null
 }
 
-const ResponsiveHome        = R(Landing,        MobileHome)
-const ResponsiveHotels      = R(Hotels,         MobileHotels)
-const ResponsiveBookings    = R(Bookings,       MobileBookings)
-const ResponsiveProfile     = R(Profile,        MobileProfile)
-const ResponsiveHotelDetail = R(HotelDetail,    MobileHotelDetail)
-const ResponsiveRoomDetail  = R(RoomDetail,     MobileRoomDetail)
-const ResponsiveGallery     = R(GalleryScreen,  MobileGalleryScreen)
+const ResponsiveHome = R(
+  () => import('./pages/Landing'),
+  () => import('./mobile/pages/MobileHome'),
+)
+const ResponsiveHotels = R(
+  () => import('./pages/Hotels'),
+  () => import('./mobile/pages/MobileHotels'),
+)
+const ResponsiveBookings = R(
+  () => import('./pages/Bookings'),
+  () => import('./mobile/pages/MobileBookings'),
+)
+const ResponsiveProfile = R(
+  () => import('./pages/Profile'),
+  () => import('./mobile/pages/MobileProfile'),
+)
+const ResponsiveHotelDetail = R(
+  () => import('./pages/HotelDetail'),
+  () => import('./mobile/pages/MobileHotelDetail'),
+)
+const ResponsiveRoomDetail = R(
+  () => import('./pages/RoomDetail'),
+  () => import('./mobile/pages/MobileRoomDetail'),
+)
+const ResponsiveGallery = R(
+  () => import('./pages/GalleryScreen'),
+  () => import('./mobile/pages/MobileGalleryScreen'),
+)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -57,7 +83,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/hotel/:hotelId/gallery"  element={<ResponsiveGallery />} />
         <Route path="/gallery/:hotelId"        element={<ResponsiveGallery />} />
         <Route path="/room/:roomId"            element={<ResponsiveRoomDetail />} />
-        <Route path="/app"      element={<App />} />
+        <Route path="/app" element={<Suspense fallback={<PageFallback />}><LazyApp /></Suspense>} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
