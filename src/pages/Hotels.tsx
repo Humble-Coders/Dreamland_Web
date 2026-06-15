@@ -211,7 +211,7 @@ export default function Hotels() {
                 onChange={(e) => setQuery(e.target.value)}
                 className="flex-1 bg-transparent text-sm text-cream placeholder-cream/25 outline-none" />
               {query && (
-                <button type="button" onClick={() => setQuery('')} className="text-cream/30 hover:text-cream/60">
+                <button type="button" onClick={() => setQuery('')} aria-label="Clear search" className="text-cream/30 hover:text-cream/60">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
                   </svg>

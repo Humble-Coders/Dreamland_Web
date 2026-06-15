@@ -28,16 +28,47 @@ export default function Landing() {
           '@type': ['Hotel', 'LodgingBusiness', 'LocalBusiness'],
           name: hotel?.name ?? 'Dreamland Resort',
           description: hotel?.description,
-          image: hotel?.photos?.[0] ? `${SITE_URL}${hotel.photos[0]}` : DEFAULT_IMAGE,
+          image: hotel?.photos?.length
+            ? hotel.photos.slice(0, 5).map((p) => `${SITE_URL}${p}`)
+            : [DEFAULT_IMAGE],
           url: SITE_URL,
           telephone: hotel?.contactPhone,
+          email: hotel?.contactEmail,
+          priceRange: '₹₹',
+          currenciesAccepted: 'INR',
+          paymentAccepted: 'Cash, Credit Card, Debit Card, UPI',
           address: {
             '@type': 'PostalAddress',
             streetAddress: hotel?.address || 'GT Road',
             addressLocality: hotel?.city || 'Karnal',
             addressRegion: 'Haryana',
+            postalCode: hotel?.pincode,
             addressCountry: 'IN',
           },
+          ...(hotel?.latitude && hotel?.longitude
+            ? {
+                geo: {
+                  '@type': 'GeoCoordinates',
+                  latitude: hotel.latitude,
+                  longitude: hotel.longitude,
+                },
+                hasMap: `https://maps.google.com/?q=${hotel.latitude},${hotel.longitude}`,
+              }
+            : {}),
+          ...(hotel?.checkInTime ? { checkinTime: hotel.checkInTime } : {}),
+          ...(hotel?.checkOutTime ? { checkoutTime: hotel.checkOutTime } : {}),
+          ...(hotel?.highlights?.length
+            ? {
+                amenityFeature: hotel.highlights.map((h) => ({
+                  '@type': 'LocationFeatureSpecification',
+                  name: h.title,
+                  value: true,
+                })),
+              }
+            : {}),
+          ...(hotel?.socialLinks
+            ? { sameAs: hotel.socialLinks.split(/[\s,]+/).filter(Boolean) }
+            : {}),
           ...(hotel?.starRating ? { starRating: { '@type': 'Rating', ratingValue: hotel.starRating } } : {}),
           ...(hotel?.averageRating ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: hotel.averageRating, reviewCount: hotel.totalReviews ?? 1 } } : {}),
         }}

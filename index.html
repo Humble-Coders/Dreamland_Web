@@ -2,36 +2,80 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta
+      name="google-site-verification"
+      content="lqwFrrPwGFQA6sG0sFPVYgiKExasZIXSE6oB4qYmz8k"
+    />
+
     <link rel="icon" type="image/png" href="/logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0a3322" />
 
     <!-- Preload the first hero/LCP image (1080w variant, matches the mobile hero <img>) -->
-    <link rel="preload" as="image" href="/photos/0D9A9987-1080.avif" fetchpriority="high" type="image/avif" />
+    <link
+      rel="preload"
+      as="image"
+      href="/photos/0D9A9987-1080.avif"
+      fetchpriority="high"
+      type="image/avif"
+    />
 
     <!-- Preload above-the-fold self-hosted fonts (body text + headings) -->
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.woff2" crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/cormorant-garamond-var.woff2" crossorigin />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/inter-var.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/cormorant-garamond-var.woff2"
+      crossorigin
+    />
 
     <!-- Primary SEO -->
     <title>Dreamland Resort Karnal | Luxury Stay & Hospitality</title>
-    <meta name="description" content="Dreamland Resort in Karnal, Haryana offers luxury rooms, fine dining and warm hospitality on GT Road. Book your stay at Hotel Dreamland today." />
+    <meta
+      name="description"
+      content="Dreamland Resort in Karnal, Haryana offers luxury rooms, fine dining and warm hospitality on GT Road. Book your stay at Hotel Dreamland today."
+    />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://bookmydreamland.com/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Dreamland Resort Karnal" />
-    <meta property="og:title" content="Dreamland Resort Karnal | Luxury Stay & Hospitality" />
-    <meta property="og:description" content="Dreamland Resort in Karnal, Haryana offers luxury rooms, fine dining and warm hospitality on GT Road. Book your stay at Hotel Dreamland today." />
-    <meta property="og:image" content="https://bookmydreamland.com/photos/0D9A9998.jpeg" />
+    <meta
+      property="og:title"
+      content="Dreamland Resort Karnal | Luxury Stay & Hospitality"
+    />
+    <meta
+      property="og:description"
+      content="Dreamland Resort in Karnal, Haryana offers luxury rooms, fine dining and warm hospitality on GT Road. Book your stay at Hotel Dreamland today."
+    />
+    <meta
+      property="og:image"
+      content="https://bookmydreamland.com/photos/0D9A9998.jpeg"
+    />
     <meta property="og:url" content="https://bookmydreamland.com/" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Dreamland Resort Karnal | Luxury Stay & Hospitality" />
-    <meta name="twitter:description" content="Dreamland Resort in Karnal, Haryana offers luxury rooms, fine dining and warm hospitality on GT Road. Book your stay at Hotel Dreamland today." />
-    <meta name="twitter:image" content="https://bookmydreamland.com/photos/0D9A9998.jpeg" />
+    <meta
+      name="twitter:title"
+      content="Dreamland Resort Karnal | Luxury Stay & Hospitality"
+    />
+    <meta
+      name="twitter:description"
+      content="Dreamland Resort in Karnal, Haryana offers luxury rooms, fine dining and warm hospitality on GT Road. Book your stay at Hotel Dreamland today."
+    />
+    <meta
+      name="twitter:image"
+      content="https://bookmydreamland.com/photos/0D9A9998.jpeg"
+    />
 
     <!-- Structured data -->
     <script type="application/ld+json">
@@ -51,20 +95,52 @@
         "url": "https://bookmydreamland.com/"
       }
     </script>
+    <!--
+      NOTE: this Hotel block is the static no-JS fallback seen by social-media
+      crawlers and Googlebot's first crawl pass. The fully populated version
+      (telephone, geo, amenities, sameAs, ratings — sourced live from Firestore)
+      is injected client-side by <SEO jsonLd=... /> in src/pages/Landing.tsx.
+      Keep the two in sync when adding fields here.
+      TODO (fill in real values once available):
+        - "telephone": "+91-XXXXXXXXXX"
+        - "geo": exact lat/lng for the property (Karnal city-centre approx. used below)
+        - "sameAs": [ Instagram / Facebook / Google Business Profile URLs ]
+    -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": ["Hotel", "LodgingBusiness", "LocalBusiness"],
         "name": "Dreamland Resort",
-        "image": "https://bookmydreamland.com/photos/0D9A9998.jpeg",
+        "description": "Dreamland Resort in Karnal, Haryana offers luxury rooms, fine dining and warm hospitality on GT Road.",
+        "image": [
+          "https://bookmydreamland.com/photos/0D9A9998.jpeg",
+          "https://bookmydreamland.com/photos/0D9A9999.jpeg",
+          "https://bookmydreamland.com/photos/0D9A9987.avif"
+        ],
         "url": "https://bookmydreamland.com/",
+        "priceRange": "₹₹",
+        "currenciesAccepted": "INR",
+        "paymentAccepted": "Cash, Credit Card, Debit Card, UPI",
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "GT Road",
           "addressLocality": "Karnal",
           "addressRegion": "Haryana",
+          "postalCode": "132001",
           "addressCountry": "IN"
-        }
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 29.6857,
+          "longitude": 76.9905
+        },
+        "amenityFeature": [
+          { "@type": "LocationFeatureSpecification", "name": "Free Wi-Fi", "value": true },
+          { "@type": "LocationFeatureSpecification", "name": "Free Parking", "value": true },
+          { "@type": "LocationFeatureSpecification", "name": "Restaurant", "value": true },
+          { "@type": "LocationFeatureSpecification", "name": "Air Conditioning", "value": true },
+          { "@type": "LocationFeatureSpecification", "name": "24-Hour Front Desk", "value": true }
+        ]
       }
     </script>
   </head>
